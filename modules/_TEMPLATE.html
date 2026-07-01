@@ -1,0 +1,128 @@
+<!doctype html>
+<!--
+  ============================================================================
+  MODULE PAGE TEMPLATE  —  copy this file to modules/<slug>.html and fill it in.
+  ============================================================================
+  HOUSE RULES for every module (see the parent issue metadata `content_rule`):
+   1. STANDALONE: the page must render by opening it directly in a browser.
+      No build step, no CDN, no framework. Use only the shared assets/style.css.
+   2. NO NOTION LINKS. Extract the *content* from the group wiki and write it
+      here in your own words. When you cite a source, link the PERMANENT primary
+      source (journal DOI, YouTube, textbook, official docs) — never a Notion URL
+      and never an expiring Notion S3 file link.
+   3. FIGURES: add original schematics/figures where they clarify a concept.
+      Prefer INLINE <svg> for conceptual diagrams (see the example below) and
+      LOCALLY-COMMITTED generated plots (e.g. matplotlib -> assets/img/<slug>-*.svg)
+      for data. No external image hot-links. No copied textbook/paper figures.
+      Every figure needs a <figcaption> and the <svg> needs role="img" + <title>.
+   4. Keep the section skeleton below; delete this comment block when done.
+   ============================================================================
+  Placeholders to replace: {{TITLE}} {{KICKER=Area 1 · Foundational}} {{SUMMARY}}
+  {{PREV_HREF}} {{PREV_TITLE}} {{NEXT_HREF}} {{NEXT_TITLE}}
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} · WuGroup Onboarding</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="container">
+    <nav class="breadcrumb"><a href="../index.html">← WuGroup Onboarding</a></nav>
+  </div>
+
+  <header class="mod-masthead">
+    <div class="container">
+      <p class="kicker">{{KICKER}}</p>
+      <h1>{{TITLE}}</h1>
+      <p class="summary">{{SUMMARY}}</p>
+    </div>
+  </header>
+
+  <main class="container prose">
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul><li>Objective one</li><li>Objective two</li><li>Objective three</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li>e.g. Module NN</li><li>e.g. basic Python</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>NN–NN hours</li></ul>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Two or three short paragraphs framing why this matters and what the reader
+         will be able to do by the end. Write in plain prose.</p>
+    </section>
+
+    <section class="section">
+      <h2>Topics</h2>
+      <h3>A sub-topic</h3>
+      <p>Explain the concept. Use <code>inline code</code> and fenced blocks:</p>
+      <pre>$ example --command here</pre>
+
+      <!-- EXAMPLE inline-SVG schematic. Replace with your own; keep role/title. -->
+      <figure>
+        <svg viewBox="0 0 520 130" role="img" aria-labelledby="figttl figdesc"
+             xmlns="http://www.w3.org/2000/svg" style="max-width:520px">
+          <title id="figttl">Example workflow schematic</title>
+          <desc id="figdesc">Three stages connected by arrows: input, process, output.</desc>
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3"
+                    orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif,system-ui,sans-serif" font-size="14">
+            <rect x="8"  y="40" width="130" height="50" rx="8" fill="#e2ebe6" stroke="#10685a"/>
+            <rect x="195" y="40" width="130" height="50" rx="8" fill="#e2ebe6" stroke="#10685a"/>
+            <rect x="382" y="40" width="130" height="50" rx="8" fill="#e2ebe6" stroke="#10685a"/>
+            <text x="73"  y="70" text-anchor="middle" fill="#0a463c">Input</text>
+            <text x="260" y="70" text-anchor="middle" fill="#0a463c">Process</text>
+            <text x="447" y="70" text-anchor="middle" fill="#0a463c">Output</text>
+            <line x1="140" y1="65" x2="192" y2="65" stroke="#10685a" stroke-width="2" marker-end="url(#ah)"/>
+            <line x1="327" y1="65" x2="379" y2="65" stroke="#10685a" stroke-width="2" marker-end="url(#ah)"/>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Replace with an original schematic that illuminates a key idea.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Book / paper / video title</strong> — one line on why it's useful.
+            <a href="https://doi.org/EXAMPLE">permanent link</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>A concrete, checkable task the reader produces to prove the skill.</p>
+    </section>
+
+    <nav class="pager">
+      <a href="{{PREV_HREF}}"><span class="dir">← Previous</span><br><span class="t">{{PREV_TITLE}}</span></a>
+      <a class="next" href="{{NEXT_HREF}}"><span class="dir">Next →</span><br><span class="t">{{NEXT_TITLE}}</span></a>
+    </nav>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <p>Wu Research Group · XJTLU</p>
+      <p><a href="../index.html">All modules</a></p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
