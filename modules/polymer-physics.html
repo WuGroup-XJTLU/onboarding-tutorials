@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Polymer Physics · WuGroup Onboarding</title>
-<meta name="description" content="Chain conformations, scaling, Flory-Huggins thermodynamics, and dynamics models.">
+<meta name="description" content="Chain conformations and scaling, Flory-Huggins solution thermodynamics, and polymer dynamics (Rouse, Zimm, reptation).">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,115 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 09</p>
       <h1>Polymer Physics</h1>
-      <p class="summary">Chain conformations, scaling, Flory-Huggins thermodynamics, and dynamics models.</p>
+      <p class="summary">Polymers are the group's main subject. What makes them fascinating is that their large-scale behaviour is governed not by chemical detail but by <strong>chain connectivity and statistics</strong> — a handful of universal scaling laws describe chains of wildly different chemistry.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Describe chain conformations and their scaling with length</li>
+          <li>Distinguish ideal, good- and theta-solvent chains</li>
+          <li>Use Flory–Huggins theory for solution thermodynamics</li>
+          <li>Understand Rouse, Zimm and reptation dynamics</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="statistical-mechanics.html">Module 07 — Stat Mech</a></li><li><a href="molecular-simulations.html">Module 08 — Molecular Simulations</a></li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>30–35 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>A polymer is a long chain of <em>N</em> repeat units. Because <em>N</em> is large, the chain's properties are dominated by statistics rather than by any single bond — which is why polymers of very different chemistry obey the same <strong>universal</strong> laws. The ideal chain plays the role here that the hydrogen atom plays in quantum mechanics: the solvable model everything else is measured against.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Single-chain conformations &amp; scaling</h2>
+      <p>Model a chain as a random walk of <em>N</em> steps of length <em>b</em>. Its size is measured by the end-to-end distance <em>R</em> or the radius of gyration <em>R<sub>g</sub></em>, and both scale as a power law:</p>
+      <pre>R ~ b · N^ν</pre>
+      <p>The exponent <em>ν</em> encodes the physics:</p>
+      <ul>
+        <li><strong>Ideal / Gaussian chain</strong> (no self-interaction, or a theta solvent): <em>ν = 1/2</em>. The random-walk result.</li>
+        <li><strong>Real chain in a good solvent</strong> (monomers repel — excluded volume): the chain swells, <em>ν ≈ 3/5</em> (Flory), a self-avoiding walk.</li>
+        <li><strong>Poor solvent</strong>: the chain collapses into a globule, <em>ν = 1/3</em>.</li>
+      </ul>
+
+      <figure>
+        <svg viewBox="0 0 560 200" role="img" aria-labelledby="chttl chdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="chttl">A polymer chain as a random coil</title>
+          <desc id="chdesc">A jagged connected path representing a random-walk polymer chain, with a straight vector from the first to the last monomer marking the end-to-end distance R.</desc>
+          <defs>
+            <marker id="ra" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8a4b2f"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <polyline points="60,150 92,96 70,60 118,74 104,120 150,140 176,92 150,52 200,66 220,120 264,104 250,58 300,80 330,130 372,116 360,66 410,90 440,140"
+                      fill="none" stroke="#10685a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+            <g fill="#0a463c">
+              <circle cx="60" cy="150" r="4.5"/><circle cx="440" cy="140" r="4.5"/>
+            </g>
+            <line x1="60" y1="150" x2="440" y2="140" stroke="#8a4b2f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ra)"/>
+            <text x="250" y="178" text-anchor="middle" fill="#7a3f22">end-to-end distance R ~ b N^ν</text>
+            <text x="60" y="168" text-anchor="middle" fill="#4a534f" font-size="10.5">monomer 1</text>
+            <text x="452" y="132" fill="#4a534f" font-size="10.5">monomer N</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. A polymer coil is a random walk. Its overall size grows as a power law in the number of monomers; the exponent ν distinguishes ideal (½), swollen good-solvent (~⅗), and collapsed (⅓) chains.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>2 · Solution thermodynamics: Flory–Huggins</h2>
+      <p>Whether a polymer dissolves, and whether two polymers mix, is captured by <strong>Flory–Huggins</strong> theory. The free energy of mixing per site is</p>
+      <pre>ΔF_mix / k_B T = (φ/N) ln φ + (1−φ) ln(1−φ) + χ · φ (1−φ)</pre>
+      <p>where <em>φ</em> is the polymer volume fraction and <em>χ</em> is the interaction parameter (roughly, the energetic cost of polymer–solvent contacts). The two logarithmic <em>entropy</em> terms favour mixing, while the <em>χ</em> term can oppose it. The crucial feature is the <em>1/N</em>: a long polymer has little mixing entropy, so even a small positive <em>χ</em> drives <strong>phase separation</strong>. This is why polymers are so often immiscible.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · Dynamics</h2>
+      <p>How a chain moves depends on length and concentration:</p>
+      <ul>
+        <li><strong>Rouse model</strong> — an unentangled chain as beads and springs, no hydrodynamics. Predicts relaxation times and a diffusion coefficient scaling as <em>D ~ 1/N</em>. The natural first comparison for coarse-grained melt simulations.</li>
+        <li><strong>Zimm model</strong> — adds hydrodynamic interactions; appropriate for dilute solutions, where it changes the scaling.</li>
+        <li><strong>Reptation</strong> (de Gennes) — in an entangled melt a chain is confined to a "tube" formed by its neighbours and must snake along its own contour. Predicts the strong slow-down of long-chain melts, e.g. viscosity <em>η ~ N<sup>3</sup></em> (experimentally ~N<sup>3.4</sup>).</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Rubinstein &amp; Colby, <em>Polymer Physics</em></strong> — the group's primary text; the place to learn this material properly.</li>
+        <li><strong>Doi &amp; Edwards, <em>The Theory of Polymer Dynamics</em></strong> — the advanced reference for Rouse/Zimm/reptation.</li>
+        <li><strong>de Gennes, <em>Scaling Concepts in Polymer Physics</em></strong> — the classic on scaling arguments.</li>
+        <li><strong>"Modeling and Simulations of Polymers: A Roadmap"</strong> — <em>Macromolecules</em>. Connects the theory to simulation. <a href="https://pubs.acs.org/doi/10.1021/acs.macromol.8b01836">doi.org/10.1021/acs.macromol.8b01836</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Generate ideal (unrestricted) and self-avoiding random walks in Python for a range of <em>N</em>; measure <em>R</em> (or <em>R<sub>g</sub></em>) and fit the scaling exponent <em>ν</em> for each. Compare to 1/2 and ~3/5.</li>
+        <li>Plot the Flory–Huggins <em>ΔF<sub>mix</sub></em> vs. <em>φ</em> for several values of <em>χ</em> and identify where the curve develops two minima (phase separation); sketch the resulting phase behaviour as a function of <em>χ</em>.</li>
+        <li><em>(Optional, links Module 08)</em> compare a Rouse-model prediction to the mean-squared displacement from a short coarse-grained MD run.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the scaling plot with fitted exponents and the Flory–Huggins free-energy/phase figure.</p>
+    </section>
 
     <nav class="pager">
       <a href="molecular-simulations.html"><span class="dir">← Previous</span><br><span class="t">Molecular Simulations</span></a>
       <a class="next" href="ml-chemistry-materials.html"><span class="dir">Next →</span><br><span class="t">Machine Learning for Chemistry &amp; Materials</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
