@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Working with AI Coding Agents · WuGroup Onboarding</title>
-<meta name="description" content="Installing and using Claude Code and Codex, prompting well, and verifying what they produce.">
+<meta name="description" content="Installing and using Claude Code and Codex, prompting effectively, and — crucially — verifying what they produce.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,150 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 04</p>
       <h1>Working with AI Coding Agents</h1>
-      <p class="summary">Installing and using Claude Code and Codex, prompting well, and verifying what they produce.</p>
+      <p class="summary">AI coding agents can draft scripts, refactor analysis code, and explain unfamiliar tools in seconds. They are powerful assistants and confident liars in equal measure — this module is about using them to go faster <em>without</em> letting a plausible-looking mistake into your science.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Install and run Claude Code and Codex</li>
+          <li>Understand what an "agent" does that a chat box doesn't</li>
+          <li>Write prompts that get useful results</li>
+          <li>Review and verify generated code before trusting it</li>
+          <li>Keep AI-assisted work reproducible and safe with data</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="unix-linux-basics.html">Module 01 — Unix</a></li><li><a href="bash-scripting.html">Module 02 — Bash</a></li><li>Some coding experience (any language)</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>12–16 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>A <strong>coding agent</strong> is a command-line (or in-editor) tool that can read your project, edit files, run commands, see the results, and iterate — not just answer a question in a chat window. In practice you describe a goal, it proposes and makes changes, runs the code, and reports back; you review, correct, and repeat. Two agents the group uses are <strong>Claude Code</strong> (Anthropic) and <strong>Codex</strong> (OpenAI).</p>
+      <div class="callout">
+        <p class="callout-title">The one rule that matters</p>
+        <p>You are responsible for everything you commit, whether or not an agent wrote it. In research, a script that looks right but is subtly wrong is more dangerous than no script at all. Treat generated code as a capable draft from a colleague who never says "I'm not sure" — read it, test it, and confirm the result is correct before you rely on it.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Installation &amp; setup</h2>
+      <p>Both tools are installed from the command line and need <a href="https://nodejs.org/">Node.js</a> (a recent LTS version). The exact commands change over time — the official docs linked below are the source of truth — but as of writing:</p>
+
+      <h3>Claude Code</h3>
+      <pre># install (Node.js 18+)
+npm install -g @anthropic-ai/claude-code
+
+# then, inside a project directory:
+cd my-project
+claude                 # first run walks you through signing in</pre>
+      <p>Authenticate with your Anthropic account (or an API key) when prompted. Run <code>claude</code> in the root of a git repo so it can see your files; ask it for a plan before letting it make changes.</p>
+
+      <h3>Codex</h3>
+      <pre># install
+npm install -g @openai/codex      # (or: brew install codex)
+
+# then, inside a project directory:
+codex                  # sign in with your ChatGPT account or an API key</pre>
+
+      <div class="callout">
+        <p class="callout-title">Before you point an agent at a repo</p>
+        <p>Work inside <strong>version control</strong> so every change is a reviewable diff you can undo (<code>git init</code> if needed). Never paste API keys or passwords into a prompt, and think before sharing <strong>unpublished data or manuscripts</strong> with an external service — check with your supervisor about what may leave the group.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>The agent loop</h2>
+      <figure>
+        <svg viewBox="0 0 580 170" role="img" aria-labelledby="agttl agdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="agttl">The AI coding-agent loop</title>
+          <desc id="agdesc">You write a prompt; the agent plans, edits files and runs them; you review the diff and verify the result; if wrong you send corrections back to the agent; if correct you commit.</desc>
+          <defs>
+            <marker id="ag" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+            <marker id="ag2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8a4b2f"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">
+            <rect x="8"   y="48" width="118" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="67"  y="68" text-anchor="middle" fill="#0a463c">1 · Prompt</text><text x="67" y="84" text-anchor="middle" fill="#4a534f" font-size="10.5">context + goal</text>
+            <rect x="166" y="48" width="130" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="231" y="66" text-anchor="middle" fill="#0a463c">2 · Agent</text><text x="231" y="82" text-anchor="middle" fill="#4a534f" font-size="10.5">plan → edit → run</text>
+            <rect x="336" y="48" width="140" height="46" rx="8" fill="#f0e5da" stroke="#8a4b2f"/><text x="406" y="66" text-anchor="middle" fill="#7a3f22">3 · You review</text><text x="406" y="82" text-anchor="middle" fill="#4a534f" font-size="10.5">read diff · verify result</text>
+            <rect x="516" y="48" width="56" height="46" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="544" y="74" text-anchor="middle" fill="#146c3d">commit</text>
+            <line x1="126" y1="71" x2="163" y2="71" stroke="#10685a" stroke-width="2" marker-end="url(#ag)"/>
+            <line x1="296" y1="71" x2="333" y2="71" stroke="#10685a" stroke-width="2" marker-end="url(#ag)"/>
+            <line x1="476" y1="71" x2="513" y2="71" stroke="#146c3d" stroke-width="2" marker-end="url(#ag)"/>
+            <path d="M406,94 C406,140 231,140 231,96" fill="none" stroke="#8a4b2f" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ag2)"/>
+            <text x="318" y="132" text-anchor="middle" fill="#8a4b2f" font-size="11">wrong? send corrections back</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Go around the loop in small steps. The review-and-verify stage (3) is where you add the value the agent can't: judging whether the result is actually correct.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>Prompting well</h2>
+      <ul>
+        <li><strong>Give context.</strong> Point at the relevant files, describe the data format, state the language/library and versions.</li>
+        <li><strong>Be specific about the goal and constraints.</strong> "Write a Python function that reads this XYZ file and returns an N×3 numpy array; no external deps beyond numpy" beats "parse my file".</li>
+        <li><strong>Ask for a plan first</strong> on anything non-trivial, then approve or adjust it before code is written.</li>
+        <li><strong>Work in small steps.</strong> One change, review, then the next — not a thousand-line rewrite you can't check.</li>
+        <li><strong>Show an example</strong> of the input and the expected output when you can.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Reviewing &amp; verifying output</h2>
+      <p>This is the part that separates useful AI assistance from silent errors in your results.</p>
+      <ul>
+        <li><strong>Read every diff.</strong> If you don't understand a change, ask the agent to explain it — or don't accept it.</li>
+        <li><strong>Test against something you know.</strong> Run the code on a tiny input whose answer you can compute by hand.</li>
+        <li><strong>Check the science, not just that it runs.</strong> Correct units, correct physics, correct edge cases — code that executes cleanly can still be wrong.</li>
+        <li><strong>Watch for hallucinations.</strong> Agents invent plausible function names, library APIs, and even citations. Verify that referenced functions and papers actually exist.</li>
+        <li><strong>Keep a human in the loop for anything that touches data or results.</strong></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Reproducibility &amp; attribution</h2>
+      <p>Commit AI-assisted code the same way as any other: small, reviewed commits with clear messages. Keep the important prompts and decisions somewhere in the repo (a note, a commit message) so the reasoning survives. Follow your supervisor's and any publisher's guidance on disclosing AI assistance in papers and code.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Claude Code documentation</strong> — install, usage, and best practices (source of truth for the current install command). <a href="https://docs.claude.com/en/docs/claude-code">docs.claude.com/en/docs/claude-code</a></li>
+        <li><strong>OpenAI Codex</strong> — the Codex CLI, docs and repository. <a href="https://developers.openai.com/codex/">developers.openai.com/codex</a> · <a href="https://github.com/openai/codex">github.com/openai/codex</a></li>
+        <li><strong>Prompt Engineering Guide (DAIR.AI)</strong> — practical, model-agnostic prompting techniques. <a href="https://www.promptingguide.ai/">promptingguide.ai</a></li>
+        <li><strong>Anthropic — Building effective agents</strong> — how agentic tools are designed and used well. <a href="https://www.anthropic.com/engineering/building-effective-agents">anthropic.com/engineering/building-effective-agents</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>Pick a small, real task — e.g. "read a directory of simulation output files and plot a quantity vs. time". Then:</p>
+      <ol>
+        <li>Use Claude Code <em>or</em> Codex to produce the script, asking for a plan first and working in small steps.</li>
+        <li>Verify it: run it on a tiny hand-checkable input, confirm the numbers and units, and note at least one thing you checked that "it runs" would not have caught.</li>
+        <li>Find (or deliberately probe for) one mistake or questionable choice the agent made, and correct it.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the working script <em>plus</em> a short "verification log" — what you asked, what you checked, what was wrong, and how you confirmed the final result is correct. The verification log is the point of the exercise.</p>
+    </section>
 
     <nav class="pager">
       <a href="hpc-slurm.html"><span class="dir">← Previous</span><br><span class="t">HPC &amp; SLURM Job Submission</span></a>
       <a class="next" href="reading-literature.html"><span class="dir">Next →</span><br><span class="t">Reading Academic Literature</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
