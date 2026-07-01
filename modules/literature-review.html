@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Doing a Literature Review · WuGroup Onboarding</title>
-<meta name="description" content="Scoping a question, screening, synthesis tables, and a PRISMA-style workflow.">
+<meta name="description" content="Scoping a question, building a documented search, screening systematically, synthesising findings, and a PRISMA-style flow.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,127 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 06</p>
       <h1>Doing a Literature Review</h1>
-      <p class="summary">Scoping a question, screening, synthesis tables, and a PRISMA-style workflow.</p>
+      <p class="summary">A literature review is not "reading a lot of papers" — it is a systematic, reproducible way to map what is known about a question, find the gaps, and position your own work against them.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Frame a focused review question</li>
+          <li>Build and document a reproducible search</li>
+          <li>Screen papers against explicit criteria</li>
+          <li>Synthesise findings and identify gaps</li>
+          <li>Report the process with a PRISMA-style flow</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="reading-literature.html">Module 05 — Reading Literature</a></li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>20–25 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Module 05 was about reading individual papers well. A literature review zooms out: it asks <em>what does the field collectively know about X, and what doesn't it?</em> The defining feature is that it is <strong>systematic and reproducible</strong> — someone else following your recorded method would find the same papers and reach the same picture. For onboarding you will do a small <strong>scoping review</strong>: a focused, documented survey rather than an exhaustive systematic review.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Scope the question</h2>
+      <p>Start narrow. "Machine-learning force fields" is a field; "How well do message-passing neural-network potentials reproduce polymer glass-transition temperatures?" is a reviewable question. Write down explicitly what is <em>in</em> scope and what is <em>out</em> — years, systems, methods, languages — before you search.</p>
+    </section>
+
+    <section class="section">
+      <h2>2 · Build a documented search</h2>
+      <p>Choose your databases (Google Scholar for reach; Web of Science / Scopus for curated, citation-tracked results). Then build a search string from your key concepts, their synonyms, and Boolean operators — and <strong>record it verbatim</strong>, with the date and database, so the search is reproducible.</p>
+      <pre>("machine learning" OR "neural network") AND
+  ("force field" OR "interatomic potential") AND
+  (polymer OR macromolecul*) AND
+  ("glass transition" OR Tg)</pre>
+      <p>Then <strong>snowball</strong>: from a few core papers, chase citations backward (their reference lists) and forward (who cited them) to catch what keyword search misses.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · Screen systematically</h2>
+      <p>Apply explicit <strong>inclusion/exclusion criteria</strong> in two stages: first on titles and abstracts, then on full text. Record how many papers you drop at each stage and why — those numbers are your PRISMA flow.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 250" role="img" aria-labelledby="prttl prdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:520px">
+          <title id="prttl">A PRISMA-style screening flow</title>
+          <desc id="prdesc">Records identified through database search flow down through title/abstract screening and full-text eligibility to the studies included, with records excluded branching off to the right at each stage.</desc>
+          <defs>
+            <marker id="pr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">
+            <rect x="70" y="14"  width="230" height="40" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="185" y="32" text-anchor="middle" fill="#0a463c">Identification</text><text x="185" y="47" text-anchor="middle" fill="#4a534f" font-size="11">records found by search (n = …)</text>
+            <rect x="70" y="80" width="230" height="40" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="185" y="98" text-anchor="middle" fill="#0a463c">Screening</text><text x="185" y="113" text-anchor="middle" fill="#4a534f" font-size="11">title/abstract (n = …)</text>
+            <rect x="70" y="146" width="230" height="40" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="185" y="164" text-anchor="middle" fill="#0a463c">Eligibility</text><text x="185" y="179" text-anchor="middle" fill="#4a534f" font-size="11">full-text assessed (n = …)</text>
+            <rect x="70" y="212" width="230" height="34" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="185" y="234" text-anchor="middle" fill="#146c3d">Included (n = …)</text>
+            <line x1="185" y1="54" x2="185" y2="78" stroke="#10685a" stroke-width="2" marker-end="url(#pr)"/>
+            <line x1="185" y1="120" x2="185" y2="144" stroke="#10685a" stroke-width="2" marker-end="url(#pr)"/>
+            <line x1="185" y1="186" x2="185" y2="210" stroke="#10685a" stroke-width="2" marker-end="url(#pr)"/>
+            <rect x="350" y="82" width="185" height="36" rx="8" fill="#f0e5da" stroke="#8a4b2f"/><text x="442" y="104" text-anchor="middle" fill="#7a3f22" font-size="11">excluded on abstract (n = …)</text>
+            <rect x="350" y="148" width="185" height="36" rx="8" fill="#f0e5da" stroke="#8a4b2f"/><text x="442" y="170" text-anchor="middle" fill="#7a3f22" font-size="11">excluded on full text (n = …)</text>
+            <line x1="300" y1="100" x2="348" y2="100" stroke="#8a4b2f" stroke-width="2" marker-end="url(#pr)"/>
+            <line x1="300" y1="166" x2="348" y2="166" stroke="#8a4b2f" stroke-width="2" marker-end="url(#pr)"/>
+          </g>
+        </svg>
+        <figcaption>Figure 1. A PRISMA-style flow records how many papers were found, screened, excluded (with reasons), and finally included — making the review auditable.</figcaption>
+      </figure>
+      <p>A screening tool such as <a href="https://www.rayyan.ai/">Rayyan</a> helps manage this when there are many records or more than one reviewer.</p>
+    </section>
+
+    <section class="section">
+      <h2>4 · Map the citation landscape</h2>
+      <p>Tools like <a href="https://www.connectedpapers.com/">Connected Papers</a> build a visual graph of a topic's key works and how they relate — a fast way to check you haven't missed a seminal paper and to see how sub-topics cluster.</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · Synthesise</h2>
+      <p>Don't summarise papers one by one — organise by <strong>theme or method</strong> and compare across them. A <strong>synthesis table</strong> makes patterns and gaps visible:</p>
+      <pre>| Paper        | System      | Method     | Key finding        | Limitation      |
+|--------------|-------------|------------|--------------------|-----------------|
+| Author 2023  | PE melt     | MACE NNP   | Tg within 5 K      | one chemistry   |
+| Author 2024  | PS, PMMA    | SchNet     | systematic offset  | small training  |</pre>
+      <p>The empty cells and repeated limitations point to the gap — which is where your project comes in.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>PRISMA 2020 statement</strong> — Page et al., <em>BMJ</em> 2021. The reporting standard and flow diagram. <a href="https://doi.org/10.1136/bmj.n71">doi.org/10.1136/bmj.n71</a> · <a href="https://www.prisma-statement.org/">prisma-statement.org</a></li>
+        <li><strong>"Ten simple rules for writing a literature review"</strong> — Pautasso, <em>PLOS Comput. Biol.</em> 2013. <a href="https://doi.org/10.1371/journal.pcbi.1003149">doi.org/10.1371/journal.pcbi.1003149</a></li>
+        <li><strong>Connected Papers</strong> — visual citation-neighbourhood explorer. <a href="https://www.connectedpapers.com/">connectedpapers.com</a></li>
+        <li><strong>Rayyan</strong> — collaborative screening for reviews. <a href="https://www.rayyan.ai/">rayyan.ai</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>Do a mini scoping review on a narrow question relevant to your project:</p>
+      <ol>
+        <li>Write the focused question with explicit inclusion/exclusion criteria.</li>
+        <li>Record your search string(s), database(s), and date; report how many records each returned.</li>
+        <li>Screen to a small included set and draw a PRISMA-style flow diagram with the counts.</li>
+        <li>Build a synthesis table of the included papers and write one paragraph naming the gap your project addresses.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the documented search, the PRISMA flow, the synthesis table, and the gap paragraph.</p>
+    </section>
 
     <nav class="pager">
       <a href="reading-literature.html"><span class="dir">← Previous</span><br><span class="t">Reading Academic Literature</span></a>
       <a class="next" href="statistical-mechanics.html"><span class="dir">Next →</span><br><span class="t">Statistical Mechanics</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
