@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Statistical Mechanics · WuGroup Onboarding</title>
-<meta name="description" content="Ensembles, partition functions and free energy — the language of everything that follows.">
+<meta name="description" content="Ensembles, the Boltzmann distribution, partition functions and free energy — the bridge from microstates to thermodynamics and the foundation for simulation.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,134 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 07</p>
       <h1>Statistical Mechanics</h1>
-      <p class="summary">Ensembles, partition functions and free energy — the language of everything that follows.</p>
+      <p class="summary">Statistical mechanics is the bridge from the microscopic world of atoms to the macroscopic thermodynamics we measure. It is also the conceptual foundation for every molecular simulation the group runs — an <code>NVT</code> or <code>NPT</code> run only means something once you know what an ensemble is.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Distinguish microstates from macrostates</li>
+          <li>Know the common ensembles and what each fixes</li>
+          <li>Use the Boltzmann distribution</li>
+          <li>Understand the partition function and free energy</li>
+          <li>Connect all of this to what a simulation samples</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li>Undergraduate thermodynamics / physical chemistry</li><li>Calculus; a little probability</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>30–35 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>A glass of water is about 10<sup>24</sup> molecules. We could never track each one, yet the water has a definite temperature, pressure, and density. Statistical mechanics explains how these few macroscopic quantities emerge from an astronomical number of microscopic configurations — by treating the microscopic state as a <em>probability distribution</em> rather than something we track exactly. Everything the group does with molecular dynamics and Monte Carlo is, underneath, a way of sampling one of these distributions.</p>
+    </section>
+
+    <section class="section">
+      <h2>Microstates, macrostates &amp; ensembles</h2>
+      <p>A <strong>microstate</strong> is a complete specification of the system — every particle's position and momentum. A <strong>macrostate</strong> is the handful of bulk quantities we actually observe (e.g. <em>N</em>, <em>V</em>, <em>T</em>). Enormously many microstates correspond to the same macrostate. An <strong>ensemble</strong> is the collection of all microstates consistent with a given macrostate, each weighted by its probability.</p>
+      <div class="meta-grid">
+        <div class="meta-card"><h4>Microcanonical (NVE)</h4><ul><li>fixed N, V, energy</li><li>isolated system</li></ul></div>
+        <div class="meta-card"><h4>Canonical (NVT)</h4><ul><li>fixed N, V, temperature</li><li>in contact with a heat bath</li></ul></div>
+        <div class="meta-card"><h4>Grand canonical (μVT)</h4><ul><li>fixed chemical potential, V, T</li><li>exchanges particles &amp; energy</li></ul></div>
+      </div>
+      <p>These are exactly the ensembles you choose between when you set up a simulation, which is why they come first.</p>
+    </section>
+
+    <section class="section">
+      <h2>The Boltzmann distribution</h2>
+      <p>In the canonical ensemble, the probability of a microstate with energy <em>E<sub>i</sub></em> is</p>
+      <pre>P(E_i) = exp(-E_i / k_B T) / Z</pre>
+      <p>The exponential <strong>Boltzmann factor</strong> <em>e</em><sup>−E/k<sub>B</sub>T</sup> says low-energy states are more probable, and that the temperature <em>T</em> sets how sharply probability falls off with energy. At low <em>T</em> the system huddles in its lowest states; at high <em>T</em> many states become accessible.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="bzttl bzdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="bzttl">Boltzmann populations of energy levels</title>
+          <desc id="bzdesc">A ladder of equally spaced energy levels; horizontal bars show occupation probability decreasing exponentially with energy. At low temperature the lowest level dominates; at high temperature the populations are more even.</desc>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <!-- axis -->
+            <line x1="60" y1="20" x2="60" y2="185" stroke="#4a534f" stroke-width="1.5"/>
+            <text x="30" y="105" fill="#4a534f" transform="rotate(-90 30,105)">energy</text>
+            <!-- low T group -->
+            <text x="150" y="200" text-anchor="middle" fill="#0a463c" font-weight="700">low T</text>
+            <rect x="62" y="150" width="150" height="16" fill="#10685a"/>
+            <rect x="62" y="118" width="70"  height="16" fill="#10685a" opacity=".7"/>
+            <rect x="62" y="86"  width="30"  height="16" fill="#10685a" opacity=".5"/>
+            <rect x="62" y="54"  width="12"  height="16" fill="#10685a" opacity=".35"/>
+            <rect x="62" y="26"  width="5"   height="16" fill="#10685a" opacity=".25"/>
+            <!-- high T group -->
+            <text x="410" y="200" text-anchor="middle" fill="#7a3f22" font-weight="700">high T</text>
+            <rect x="330" y="150" width="150" height="16" fill="#8a4b2f"/>
+            <rect x="330" y="118" width="120" height="16" fill="#8a4b2f" opacity=".85"/>
+            <rect x="330" y="86"  width="95"  height="16" fill="#8a4b2f" opacity=".72"/>
+            <rect x="330" y="54"  width="72"  height="16" fill="#8a4b2f" opacity=".6"/>
+            <rect x="330" y="26"  width="55"  height="16" fill="#8a4b2f" opacity=".5"/>
+            <text x="250" y="14" text-anchor="middle" fill="#7c847f">bar length = occupation probability ∝ e^(−E/k_BT)</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Occupation of energy levels. At low temperature the ground state dominates; raising T spreads probability into higher levels. This single idea underlies temperature in every simulation.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>The partition function</h2>
+      <p>The normalising sum in the denominator is the <strong>partition function</strong>:</p>
+      <pre>Z = Σ_i exp(-E_i / k_B T)          (sum over all microstates)</pre>
+      <p>It looks like mere bookkeeping, but <em>Z</em> is the central object of the subject: essentially every equilibrium thermodynamic quantity can be obtained from it by differentiation — average energy, heat capacity, pressure, entropy. If you can compute <em>Z</em>, you know the thermodynamics.</p>
+    </section>
+
+    <section class="section">
+      <h2>Free energy</h2>
+      <p>The bridge from <em>Z</em> to thermodynamics is the <strong>Helmholtz free energy</strong>:</p>
+      <pre>F = -k_B T ln Z</pre>
+      <p>At fixed <em>N</em>, <em>V</em>, <em>T</em>, systems evolve toward minimum <em>F</em> — a balance between low energy and high entropy (<em>F = U − TS</em>). Free-energy <em>differences</em> are what determine whether a process happens: binding, mixing, folding, adsorption. Much of computational soft-matter research is, in the end, a fight to compute a free-energy difference accurately.</p>
+    </section>
+
+    <section class="section">
+      <h2>Speeds &amp; equipartition</h2>
+      <p>For an ideal gas the Boltzmann distribution over momenta gives the <strong>Maxwell–Boltzmann distribution</strong> of molecular speeds, and the <strong>equipartition theorem</strong> assigns ½<em>k<sub>B</sub>T</em> of energy to each quadratic degree of freedom. This is why a thermostat can set temperature by controlling the average kinetic energy of the atoms.</p>
+    </section>
+
+    <section class="section">
+      <h2>Why this matters for simulation</h2>
+      <p>A molecular-dynamics trajectory or a Monte-Carlo walk is a machine for drawing samples from one of these ensembles. A <strong>thermostat</strong> couples the system to a heat bath to target the canonical ensemble; a time (or ensemble) average over the sampled microstates estimates the thermodynamic average — provided the run actually explores the relevant states (<em>ergodicity</em>). Keep this picture in mind going into <a href="molecular-simulations.html">Module 08</a>: the algorithms there are concrete ways of sampling the distributions defined here.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Pathria &amp; Beale, <em>Statistical Mechanics</em></strong> — a standard, thorough graduate text.</li>
+        <li><strong>Blundell &amp; Blundell, <em>Concepts in Thermal Physics</em></strong> — an accessible route in if the above is heavy going.</li>
+        <li><strong>Hansen &amp; McDonald, <em>Theory of Simple Liquids</em></strong> — advanced but self-contained; a superb reference for the classical statistical mechanics behind liquids and simulation (a group favourite).</li>
+        <li><strong>MIT OCW 8.333 — Statistical Mechanics of Particles</strong> (M. Kardar). Full lecture notes, problems, and videos, free. <a href="https://ocw.mit.edu/courses/8-333-statistical-mechanics-i-statistical-mechanics-of-particles-fall-2013/">ocw.mit.edu · 8.333</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>Work by hand through a two-level system (energies 0 and ε): write down <em>Z</em>, the level populations, and the average energy as functions of <em>T</em>, and sketch how each behaves from low to high temperature. Explain in a sentence what happens as <em>T → 0</em> and <em>T → ∞</em>.</p>
+      <div class="callout">
+        <p class="callout-title">Optional (a plus)</p>
+        <p>Write a short Python script that computes the partition function of the <strong>1D Ising model</strong> for <em>N</em> spins by direct enumeration, and plot the average energy vs. temperature. This is good practice for connecting the formalism to code — but it is a bonus, not required.</p>
+      </div>
+    </section>
 
     <nav class="pager">
       <a href="literature-review.html"><span class="dir">← Previous</span><br><span class="t">Doing a Literature Review</span></a>
       <a class="next" href="molecular-simulations.html"><span class="dir">Next →</span><br><span class="t">Molecular Simulations</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
