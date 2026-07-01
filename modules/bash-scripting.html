@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bash Scripting · WuGroup Onboarding</title>
-<meta name="description" content="Variables, loops, functions, arguments and robust error handling for reproducible scripts.">
+<meta name="description" content="Variables, quoting, arguments, conditionals, loops, functions, exit codes and error handling for reproducible research scripts.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,179 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 02</p>
       <h1>Bash Scripting</h1>
-      <p class="summary">Variables, loops, functions, arguments and robust error handling for reproducible scripts.</p>
+      <p class="summary">A script turns a sequence of commands you keep re-typing into one reproducible, shareable file. This module covers the language features you need to write scripts that are correct, robust, and readable.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Write and run a Bash script from a shebang</li>
+          <li>Use variables, quoting, and command substitution correctly</li>
+          <li>Take command-line arguments</li>
+          <li>Branch and loop over files</li>
+          <li>Factor code into functions and fail loudly on errors</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a></li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>15–18 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Any time you find yourself running the same three commands over and over, or copy-pasting a sequence from your notes, that sequence should become a script. A script is a plain text file of shell commands that anyone (including future-you) can read, re-run, and trust to do the same thing every time. Reproducibility is the whole point: a result that came from a script you kept is a result you can defend and repeat.</p>
+      <p>This module is about writing scripts well. It does <em>not</em> cover scheduling/automation (cron and friends) — for running scripts as cluster jobs, see <a href="hpc-slurm.html">Module 03</a>.</p>
+    </section>
+
+    <section class="section">
+      <h2>The anatomy of a script</h2>
+      <p>A script starts with a <strong>shebang</strong> telling the system which interpreter to use, and is made executable with <code>chmod +x</code>.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="anttl andesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="anttl">Anatomy of a robust Bash script</title>
+          <desc id="andesc">A script box with four labelled parts: shebang line, safety options set -euo pipefail, a body reading arguments, and an explicit exit status; arguments enter from the left, output and an exit code leave to the right.</desc>
+          <defs>
+            <marker id="ba" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-monospace, Menlo, monospace" font-size="12">
+            <text x="8" y="40" fill="#7c847f">args &amp; stdin</text>
+            <line x1="8" y1="52" x2="60" y2="52" stroke="#10685a" stroke-width="2" marker-end="url(#ba)"/>
+            <rect x="66" y="16" width="380" height="176" rx="10" fill="#fffdf8" stroke="#10685a"/>
+            <rect x="80" y="30"  width="352" height="30" rx="6" fill="#e2ebe6"/><text x="92" y="50" fill="#0a463c">#!/usr/bin/env bash  ← shebang</text>
+            <rect x="80" y="68"  width="352" height="30" rx="6" fill="#e2ebe6"/><text x="92" y="88" fill="#0a463c">set -euo pipefail   ← fail loudly</text>
+            <rect x="80" y="106" width="352" height="42" rx="6" fill="#f0e9db"/><text x="92" y="124" fill="#4a534f">infile="$1"        ← read arguments</text><text x="92" y="140" fill="#4a534f">process "$infile"  ← the work</text>
+            <rect x="80" y="156" width="352" height="26" rx="6" fill="#e2ebe6"/><text x="92" y="174" fill="#0a463c">exit 0             ← explicit status</text>
+            <line x1="446" y1="90" x2="500" y2="90" stroke="#10685a" stroke-width="2" marker-end="url(#ba)"/>
+            <text x="452" y="80" fill="#7c847f">stdout</text>
+            <line x1="446" y1="140" x2="500" y2="140" stroke="#8a4b2f" stroke-width="2" marker-end="url(#ba)"/>
+            <text x="452" y="130" fill="#8a4b2f">exit code</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. A well-formed script: a shebang, safety options, arguments read into named variables, the work, and an explicit exit status the caller can check.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>Variables &amp; quoting</h2>
+      <p>Assign with <code>name=value</code> (no spaces around <code>=</code>) and expand with <code>$name</code>. <strong>Always quote your expansions</strong> — <code>"$var"</code> — so that values containing spaces don't get split into multiple words. This single habit prevents most beginner bugs.</p>
+      <pre>greeting="hello world"
+echo $greeting        # two words after splitting — usually not what you want
+echo "$greeting"      # one argument, exactly as stored  ✓
+
+today=$(date +%F)     # command substitution: capture a command's output
+echo "Log for ${today}"</pre>
+    </section>
+
+    <section class="section">
+      <h2>Arguments</h2>
+      <p>Values passed on the command line appear as <code>$1</code>, <code>$2</code>, …; <code>$@</code> is all of them and <code>$#</code> is the count.</p>
+      <pre>#!/usr/bin/env bash
+# usage: ./analyse.sh INPUT_DIR [OUTPUT_DIR]
+indir="$1"
+outdir="${2:-results}"      # default to "results" if $2 is unset
+echo "reading from $indir, writing to $outdir"</pre>
+    </section>
+
+    <section class="section">
+      <h2>Conditionals</h2>
+      <p>Use <code>[[ ... ]]</code> for tests. Common ones: <code>-f</code> (file exists), <code>-d</code> (directory exists), <code>-z</code> (empty string), string <code>==</code>, and numeric <code>-lt -le -gt -ge -eq</code>.</p>
+      <pre>if [[ ! -d "$indir" ]]; then
+  echo "error: $indir is not a directory" &gt;&amp;2   # message to stderr
+  exit 1                                          # non-zero = failure
+fi
+
+if [[ "$#" -lt 1 ]]; then
+  echo "usage: $0 INPUT_DIR [OUTPUT_DIR]" &gt;&amp;2
+  exit 2
+fi</pre>
+    </section>
+
+    <section class="section">
+      <h2>Loops</h2>
+      <pre># iterate over files safely (globs, not `ls`)
+for f in "$indir"/*.xyz; do
+  echo "processing $f"
+  # ... do work on "$f"
+done
+
+# repeat until a condition changes
+n=0
+while [[ "$n" -lt 5 ]]; do
+  echo "step $n"
+  n=$(( n + 1 ))           # arithmetic
+done</pre>
+    </section>
+
+    <section class="section">
+      <h2>Functions</h2>
+      <pre>log() {                     # define a reusable helper
+  echo "[$(date +%T)] $*"
+}
+
+convert() {
+  local src="$1"            # `local` keeps variables scoped to the function
+  local dst="${src%.xyz}.pdb"
+  some_tool "$src" &gt; "$dst"
+  log "wrote $dst"
+}
+
+log "starting"
+convert input.xyz</pre>
+    </section>
+
+    <section class="section">
+      <h2>Failing loudly: <code>set -euo pipefail</code></h2>
+      <p>By default Bash keeps going after a command fails, which can silently corrupt a run. Put this near the top of every script:</p>
+      <pre>set -euo pipefail
+# -e  exit immediately if any command fails
+# -u  error on use of an unset variable (catches typos)
+# -o pipefail  a pipeline fails if ANY stage fails, not just the last</pre>
+      <div class="callout">
+        <p class="callout-title">Lint your scripts</p>
+        <p>Run <a href="https://www.shellcheck.net/">ShellCheck</a> on every script — it catches quoting mistakes, unset variables, and dozens of other footguns automatically. Many editors run it as you type.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Bash Guide for Beginners</strong> — Machtelt Garrels (TLDP). A gentle, complete introduction. <a href="https://tldp.org/LDP/Bash-Beginners-Guide/html/">tldp.org/LDP/Bash-Beginners-Guide</a></li>
+        <li><strong>Advanced Bash-Scripting Guide</strong> — Mendel Cooper (TLDP). A deep reference for when you need more. <a href="https://tldp.org/LDP/abs/html/">tldp.org/LDP/abs</a></li>
+        <li><strong>ShellCheck</strong> — a static analysis tool that finds bugs in shell scripts. <a href="https://www.shellcheck.net/">shellcheck.net</a></li>
+        <li><strong>Google Shell Style Guide</strong> — sensible conventions used across many labs. <a href="https://google.github.io/styleguide/shellguide.html">google.github.io/styleguide/shellguide</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>Write a script <code>summarise.sh</code> that:</p>
+      <ol>
+        <li>Takes an input directory as <code>$1</code> and prints a usage message and exits non-zero if it is missing or not a directory.</li>
+        <li>Starts with <code>set -euo pipefail</code> and a shebang.</li>
+        <li>Loops over every <code>*.dat</code> file in the directory and, for each, prints the filename and its line count.</li>
+        <li>Uses a function to do the per-file work.</li>
+        <li>Passes <code>ShellCheck</code> with no warnings, and exits <code>0</code> on success.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the <code>summarise.sh</code> file plus a screenshot or transcript of it running on a test directory and its clean ShellCheck output.</p>
+    </section>
 
     <nav class="pager">
       <a href="unix-linux-basics.html"><span class="dir">← Previous</span><br><span class="t">Unix/Linux Basics</span></a>
       <a class="next" href="hpc-slurm.html"><span class="dir">Next →</span><br><span class="t">HPC &amp; SLURM Job Submission</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
