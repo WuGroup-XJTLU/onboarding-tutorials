@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Machine Learning for Chemistry &amp; Materials · WuGroup Onboarding</title>
-<meta name="description" content="ML potentials, materials databases, descriptors and generative models for molecules.">
+<meta name="description" content="ML for molecules and materials: supervised learning, representations, machine-learned interatomic potentials, databases, and generative models.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,122 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 10</p>
       <h1>Machine Learning for Chemistry &amp; Materials</h1>
-      <p class="summary">ML potentials, materials databases, descriptors and generative models for molecules.</p>
+      <p class="summary">Machine learning is reshaping molecular and materials science — predicting properties, running simulations at near-quantum accuracy for a fraction of the cost, and proposing new candidate materials. This module maps the landscape and, just as importantly, its pitfalls.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Apply supervised ML to molecular/materials data</li>
+          <li>Choose sensible representations (descriptors, graphs)</li>
+          <li>Understand machine-learned interatomic potentials</li>
+          <li>Query materials databases</li>
+          <li>Recognise where generative models and ML pitfalls apply</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li>Basic Python (numpy, scikit-learn)</li><li>Helpful: <a href="statistical-mechanics.html">M07</a>, <a href="molecular-simulations.html">M08</a></li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>40–45 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Computational chemistry lives with a stubborn trade-off: quantum methods like DFT are accurate but expensive, while classical force fields are cheap but limited. Machine learning attacks this from several directions — learning to <em>predict properties</em> directly, learning <em>interatomic potentials</em> that approach DFT accuracy at simulation cost, and learning to <em>generate</em> new candidate molecules and materials.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Supervised learning, done properly</h2>
+      <p>The basic loop is familiar: featurise your inputs, fit a model (regression for continuous properties, classification for categories), and evaluate it. What bites people in materials science is <strong>evaluation</strong>:</p>
+      <ul>
+        <li><strong>Split honestly.</strong> Train / validation / test; tune hyperparameters on validation, report on the untouched test set.</li>
+        <li><strong>Beware data leakage</strong> — near-duplicate structures split across train and test inflate scores.</li>
+        <li><strong>Out-of-distribution is the real test.</strong> A model that interpolates known chemistries may fail completely on a new one; report where it works <em>and where it doesn't</em>.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>2 · Representing molecules &amp; materials</h2>
+      <p>A model is only as good as how you present the structure to it. Good representations respect physical <strong>invariances</strong> (translation, rotation, permutation of identical atoms). Common choices: fixed <strong>descriptors</strong> such as SOAP or atom-centred symmetry functions, and <strong>graph representations</strong> where atoms are nodes and bonds/neighbours are edges (the basis of modern graph neural networks). The representation often matters more than the model.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · Machine-learned interatomic potentials</h2>
+      <p>The flagship application in the group's area. A <strong>machine-learned potential</strong> (MLP / NNP) is trained on energies and forces from DFT and then predicts them for new configurations — letting you run molecular dynamics at <em>near-DFT accuracy</em> but at a cost closer to a classical force field.</p>
+
+      <figure>
+        <svg viewBox="0 0 580 150" role="img" aria-labelledby="mlttl mldesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="mlttl">Training and using a machine-learned interatomic potential</title>
+          <desc id="mldesc">DFT reference calculations of energies and forces on many configurations are used to train a neural-network potential, which is then deployed to run molecular dynamics quickly at near-DFT accuracy.</desc>
+          <defs>
+            <marker id="ma" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <rect x="8"   y="46" width="150" height="56" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="83" y="70" text-anchor="middle" fill="#0a463c">DFT reference</text><text x="83" y="87" text-anchor="middle" fill="#4a534f" font-size="10.5">energies + forces</text>
+            <rect x="215" y="46" width="150" height="56" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="290" y="70" text-anchor="middle" fill="#0a463c">Train NNP</text><text x="290" y="87" text-anchor="middle" fill="#4a534f" font-size="10.5">Behler–Parrinello · MACE</text>
+            <rect x="422" y="46" width="150" height="56" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="497" y="70" text-anchor="middle" fill="#146c3d">Run MD</text><text x="497" y="87" text-anchor="middle" fill="#4a534f" font-size="10.5">fast · near-DFT</text>
+            <line x1="158" y1="74" x2="212" y2="74" stroke="#10685a" stroke-width="2" marker-end="url(#ma)"/>
+            <line x1="365" y1="74" x2="419" y2="74" stroke="#10685a" stroke-width="2" marker-end="url(#ma)"/>
+            <path d="M497,102 C497,132 290,132 290,104" fill="none" stroke="#8a4b2f" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#ma)"/>
+            <text x="393" y="127" text-anchor="middle" fill="#8a4b2f" font-size="10.5">active learning: add new configs, retrain</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. An ML potential is trained on DFT data and then drives cheap, accurate MD. Coverage of the training set is everything — active learning adds the configurations the model is unsure about and retrains.</figcaption>
+      </figure>
+
+      <p>Landmark and modern approaches: the <strong>Behler–Parrinello</strong> high-dimensional NNP, and message-passing / equivariant networks such as <strong>SchNet</strong>, <strong>NequIP</strong> and <strong>MACE</strong>. Their Achilles heel is <em>coverage</em>: a potential is only reliable for configurations resembling its training data.</p>
+    </section>
+
+    <section class="section">
+      <h2>4 · Data &amp; databases</h2>
+      <p>ML needs data. The <a href="https://materialsproject.org/">Materials Project</a> provides computed properties for hundreds of thousands of materials via a web interface and an API; benchmark suites such as <strong>Matbench</strong> let you compare methods fairly. The <a href="https://wiki.fysik.dtu.dk/ase/">Atomic Simulation Environment (ASE)</a> is the Python glue for reading structures, querying databases, and driving calculators (including ML potentials).</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · Generative models &amp; inverse design</h2>
+      <p>Rather than screening known materials, generative models — <strong>VAEs</strong>, <strong>GANs</strong>, and increasingly <strong>diffusion models</strong> — propose <em>new</em> candidates with desired properties. The promise is inverse design; the catch is validation: a generated structure is a hypothesis that still has to be checked with simulation or experiment before it means anything.</p>
+    </section>
+
+    <section class="section">
+      <h2>6 · A word on pitfalls</h2>
+      <p>ML in science amplifies both good and bad practice. Models are confidently wrong outside their training distribution, metrics can flatter through leakage, and a beautiful prediction is still just a prediction. Treat every ML result the way <a href="ai-coding-agents.html">Module 04</a> treats AI-written code: useful, fast, and to be <strong>verified against ground truth</strong> before you trust it.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>"Machine Learning Force Fields"</strong> — Unke et al., <em>Chem. Rev.</em> 2021. The comprehensive review. <a href="https://doi.org/10.1021/acs.chemrev.0c01111">doi.org/10.1021/acs.chemrev.0c01111</a></li>
+        <li><strong>"Deep Learning for Molecules and Materials"</strong> — A. White. A free, hands-on online book. <a href="https://dmol.pub/">dmol.pub</a></li>
+        <li><strong>Materials Project</strong> · <strong>ASE</strong> · <strong>Matbench</strong>. <a href="https://materialsproject.org/">materialsproject.org</a> · <a href="https://wiki.fysik.dtu.dk/ase/">ase docs</a> · <a href="https://matbench.materialsproject.org/">matbench</a></li>
+        <li><strong>DeePMD "DFT → MD" hands-on tutorial</strong> — building a deep-potential model for materials. <a href="https://bohrium.dp.tech/notebooks/6116401077">bohrium.dp.tech notebook</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Query the Materials Project (via its API / ASE) for a property — e.g. formation energy — across a set of materials, and save a small dataset.</li>
+        <li>Train a simple regression model on a descriptor to predict that property, with an honest train/test split; report the test MAE and plot predicted vs. true.</li>
+        <li><em>(Optional)</em> run a pretrained <strong>MACE</strong> potential on a small structure to compute its energy and forces, and compare the cost to a DFT single-point.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the dataset, the trained model's parity plot and test error, and a sentence on where you'd expect the model to fail.</p>
+    </section>
 
     <nav class="pager">
       <a href="polymer-physics.html"><span class="dir">← Previous</span><br><span class="t">Polymer Physics</span></a>
-      <a class="next" href="../index.html"><span class="dir">Next →</span><br><span class="t">Back to index</span></a>
+      <a class="next" href="../index.html"><span class="dir">Finish →</span><br><span class="t">Back to all modules</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
