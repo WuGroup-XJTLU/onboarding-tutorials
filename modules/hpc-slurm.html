@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HPC &amp; SLURM Job Submission · WuGroup Onboarding</title>
-<meta name="description" content="Running work on the XJTLU cluster: environment modules, batch scripts, queues and etiquette.">
+<meta name="description" content="Getting onto the XJTLU HPC cluster: accounts, connecting, the module system, writing an sbatch script, and job etiquette.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,182 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 03</p>
       <h1>HPC &amp; SLURM Job Submission</h1>
-      <p class="summary">Running work on the XJTLU cluster: environment modules, batch scripts, queues and etiquette.</p>
+      <p class="summary">The group's real computing runs on the <strong>XJTLU High Performance Computing (HPC) Platform</strong>. This module takes you from "I have an account" to "my job is running on a compute node": connecting, loading software, writing a SLURM batch script, and cluster etiquette.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Get and keep an HPC account</li>
+          <li>Connect and transfer data</li>
+          <li>Load software with environment modules</li>
+          <li>Write, submit, and monitor a SLURM job</li>
+          <li>Follow cluster etiquette</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="unix-linux-basics.html">Module 01 — Unix</a></li><li><a href="bash-scripting.html">Module 02 — Bash</a></li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>15–20 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>An HPC cluster is not one big computer — it is many <strong>compute nodes</strong> you reach through a shared <strong>login node</strong>, all seeing the same <strong>file system</strong>, with a <strong>scheduler</strong> (SLURM) deciding whose job runs where and when. You do not run heavy work directly; you describe it in a small script and <em>submit</em> it, and the scheduler runs it on a compute node when resources are free.</p>
+      <p>This module is written for the XJTLU platform specifically. The authoritative, always-current reference is the <a href="https://hpc.xjtlu.edu.cn/">XJTLU HPC documentation</a> (reachable on the campus network / via the university VPN) — check it for the latest node lists and limits.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Get an account</h2>
+      <p>You need a user account <em>and</em> membership of a project that has an allocation. Apply through the <strong>HPC Request Application Form</strong> on the XJTLU intranet; as a student you apply with your <strong>supervisor's (project leader's) approval</strong>. After you receive the account, <strong>change the password within three days</strong> (log in and run <code>passwd</code>); accounts idle for six months may be suspended, and a forgotten password is reset through Esupport.</p>
+    </section>
+
+    <section class="section">
+      <h2>2 · The cluster at a glance</h2>
+      <p>The platform spans two campuses (<strong>SIP</strong> and <strong>XEC</strong>) and is made of login nodes, data-transfer nodes, compute nodes (CPU, huge-memory, and GPU), and a shared GPFS file system, all linked by a fast InfiniBand HDR100 network.</p>
+
+      <figure>
+        <svg viewBox="0 0 580 250" role="img" aria-labelledby="clttl cldesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="clttl">XJTLU HPC cluster architecture</title>
+          <desc id="cldesc">Your laptop connects by SSH to a shared login node; you submit jobs to the SLURM scheduler, which dispatches them to CPU, GPU and huge-memory compute nodes; all nodes share one GPFS file system.</desc>
+          <defs>
+            <marker id="ca" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <rect x="10" y="86" width="96" height="44" rx="8" fill="#f0e9db" stroke="#c3b9a3"/><text x="58" y="104" text-anchor="middle" fill="#4a534f">your laptop</text><text x="58" y="120" text-anchor="middle" fill="#7c847f" font-size="10.5">(off-campus: VPN)</text>
+            <line x1="106" y1="108" x2="150" y2="108" stroke="#10685a" stroke-width="2" marker-end="url(#ca)"/><text x="128" y="100" text-anchor="middle" fill="#7c847f" font-size="10">ssh</text>
+            <rect x="152" y="84" width="110" height="48" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="207" y="103" text-anchor="middle" fill="#0a463c">Login node</text><text x="207" y="119" text-anchor="middle" fill="#4a534f" font-size="10">login.hpc.xjtlu.edu.cn</text>
+            <rect x="152" y="150" width="110" height="34" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="207" y="171" text-anchor="middle" fill="#0a463c">SLURM scheduler</text>
+            <line x1="207" y1="132" x2="207" y2="148" stroke="#10685a" stroke-width="2" marker-end="url(#ca)"/><text x="255" y="145" fill="#7c847f" font-size="10">sbatch</text>
+            <rect x="320" y="44" width="150" height="34" rx="8" fill="#fffdf8" stroke="#10685a"/><text x="395" y="65" text-anchor="middle" fill="#0a463c">CPU nodes · cpu6348</text>
+            <rect x="320" y="90" width="150" height="34" rx="8" fill="#fffdf8" stroke="#10685a"/><text x="395" y="111" text-anchor="middle" fill="#0a463c">GPU nodes · gpua800</text>
+            <rect x="320" y="136" width="150" height="34" rx="8" fill="#fffdf8" stroke="#10685a"/><text x="395" y="157" text-anchor="middle" fill="#0a463c">huge-mem · cpuhuge1t</text>
+            <line x1="262" y1="167" x2="316" y2="61"  stroke="#10685a" stroke-width="1.5" marker-end="url(#ca)"/>
+            <line x1="262" y1="167" x2="316" y2="107" stroke="#10685a" stroke-width="1.5" marker-end="url(#ca)"/>
+            <line x1="262" y1="167" x2="316" y2="153" stroke="#10685a" stroke-width="1.5" marker-end="url(#ca)"/>
+            <rect x="10" y="210" width="540" height="30" rx="8" fill="#f0e5da" stroke="#8a4b2f"/><text x="280" y="230" text-anchor="middle" fill="#7a3f22">shared GPFS file system — same files visible on every node</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. You log in to a shared login node and submit jobs; SLURM runs them on CPU, GPU, or huge-memory compute nodes. Every node sees the same GPFS file system, so paths are consistent everywhere.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section">
+      <h2>3 · Connect &amp; transfer data</h2>
+      <p>Log in over SSH to the login node for your campus (from off-campus you must be on the XJTLU VPN first):</p>
+      <pre>ssh &lt;username&gt;@login.hpc.xjtlu.edu.cn      # SIP campus
+ssh &lt;username&gt;@xeclogin.hpc.xjtlu.edu.cn   # XEC campus</pre>
+      <p>On Windows, <strong>MobaXterm</strong> or <strong>PuTTY</strong> are the recommended clients. Move files through the <strong>data-transfer node</strong> (<code>dtn.hpc.xjtlu.edu.cn</code>, or <code>xecdtn.hpc.xjtlu.edu.cn</code>) with <code>scp</code>/<code>rsync</code> (or WinSCP on Windows):</p>
+      <pre>scp -r ./inputs  &lt;username&gt;@dtn.hpc.xjtlu.edu.cn:~/runs/
+rsync --archive --partial --progress ./runs/  &lt;username&gt;@dtn.hpc.xjtlu.edu.cn:~/runs/</pre>
+    </section>
+
+    <section class="section">
+      <h2>4 · Load software with modules</h2>
+      <p>Software is provided as <strong>environment modules</strong> — you load what you need rather than installing it yourself:</p>
+      <pre>module avail                 # list available software
+module load anaconda3        # e.g. load Anaconda (Python)
+module list                  # what's loaded now
+module purge                 # unload everything</pre>
+      <p>Compilers and libraries (gcc, Intel oneAPI/MKL/MPI, OpenMPI, CMake, CUDA) load the same way. For Python, the platform ships ready-made Conda environments — after <code>module load anaconda3</code>, run <code>conda env list</code> to see them (e.g. <code>base</code>, <code>pytorch-base</code>, <code>tf-env-base</code>), and <code>source activate &lt;env&gt;</code> to use one.</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · SLURM: the scheduler</h2>
+      <div class="callout">
+        <p class="callout-title">The golden rule</p>
+        <p>The login node is shared by everyone — <strong>never run heavy or parallel work on it</strong>. Put your work in a batch script and submit it so SLURM runs it on a compute node.</p>
+      </div>
+      <p>The commands you will use most:</p>
+      <pre>sinfo         # cluster / partition status
+squeue        # the job queue (add -u $USER for just yours)
+sbatch job.slurm   # submit a batch job
+scancel &lt;jobid&gt;     # cancel a job
+sacct         # reports on your completed jobs
+slurm-tool    # your storage quota, Account, QoS and limits at a glance</pre>
+      <p>Jobs run in <strong>partitions</strong> (queues), each paired with a <strong>QoS</strong> that sets limits (the maximum wall-time is up to 7 days):</p>
+      <div class="meta-grid">
+        <div class="meta-card"><h4>cpu6348</h4><ul><li>general CPU jobs</li><li>1–26 cores by default</li></ul></div>
+        <div class="meta-card"><h4>cpuhuge1t</h4><ul><li>huge-memory jobs</li><li>1–92 cores by default</li></ul></div>
+        <div class="meta-card"><h4>gpu3090</h4><ul><li>1–8 × NVIDIA RTX 3090</li></ul></div>
+        <div class="meta-card"><h4>gpua800</h4><ul><li>1–4 × NVIDIA A800</li></ul></div>
+      </div>
+      <p>Use <code>sinfo</code> for the live list (partitions and limits change — the <a href="https://hpc.xjtlu.edu.cn/">HPC docs</a> are authoritative). <code>salloc</code> exists for quick interactive debugging only — release it as soon as you're done, and use <code>sbatch</code> for real work.</p>
+    </section>
+
+    <section class="section">
+      <h2>6 · Write &amp; submit a job script</h2>
+      <p>A SLURM batch script is a normal Bash script whose top comment lines (<code>#SBATCH</code>) request resources. A CPU example:</p>
+      <pre>#!/bin/bash
+#SBATCH --job-name=hello         # a name shown in the queue
+#SBATCH --partition=cpu6348      # which partition/queue
+#SBATCH --qos=26cores            # QoS matching the partition's limits
+#SBATCH --nodes=1                # number of nodes
+#SBATCH --ntasks-per-node=4      # cores on that node
+#SBATCH --output=%j.out          # stdout  → &lt;jobid&gt;.out
+#SBATCH --error=%j.err           # stderr  → &lt;jobid&gt;.err
+
+module load anaconda3            # load the software you need
+hostname                         # which compute node am I on?
+python my_analysis.py            # ... the actual work</pre>
+      <p>Submit it, watch it, and collect the output:</p>
+      <pre>$ sbatch hello.slurm
+Submitted batch job 2023
+$ squeue -u $USER            # PENDING → RUNNING → (gone when done)
+$ ls 2023.out 2023.err       # results appear in the files you named</pre>
+      <p>A GPU job is the same with a GPU partition and a <code>--gres</code> request:</p>
+      <pre>#SBATCH --partition=gpua800
+#SBATCH --qos=4a800
+#SBATCH --gres=gpu:2             # request 2 GPUs
+#SBATCH --cpus-per-task=4</pre>
+    </section>
+
+    <section class="section">
+      <h2>7 · Etiquette</h2>
+      <ul>
+        <li><strong>Never compute on the login node</strong> — it's shared; submit a job instead.</li>
+        <li><strong>Request only what you'll use.</strong> Idle reserved cores/GPUs block other people; the cluster is a shared, scarce resource.</li>
+        <li><strong>Release interactive sessions</strong> (<code>salloc</code>) as soon as you finish debugging.</li>
+        <li><strong>Name files and directories with plain English characters and numbers</strong> — special characters can break jobs.</li>
+        <li><strong>Mind your storage quota</strong> (check with <code>slurm-tool</code>); write large job output to your allocated space, not <code>$HOME</code> forever.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>XJTLU HPC documentation</strong> — the authoritative reference (accounts, login, software, SLURM, examples). On campus / via VPN. <a href="https://hpc.xjtlu.edu.cn/">hpc.xjtlu.edu.cn</a></li>
+        <li><strong>SLURM official documentation</strong> — the scheduler's own manuals for <code>sbatch</code>, <code>srun</code>, <code>squeue</code>, etc. <a href="https://slurm.schedmd.com/documentation.html">slurm.schedmd.com</a></li>
+        <li><strong>Module 01 — Unix</strong> and <strong>Module 02 — Bash</strong> — SSH, the shell, and scripting all carry directly over to the cluster.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Log in to the cluster and confirm you're on a login node; run <code>slurm-tool</code> to see your Account, QoS, and storage quota.</li>
+        <li>Run <code>sinfo</code> and note which partitions are available and idle.</li>
+        <li>Write a small <code>hello.slurm</code> that loads a module, prints the compute node's <code>hostname</code>, and runs one trivial command; submit it with <code>sbatch</code>.</li>
+        <li>Watch it with <code>squeue -u $USER</code>, then retrieve and show your <code>&lt;jobid&gt;.out</code> file.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> your <code>hello.slurm</code> script and the contents of its output file, plus one sentence naming the compute node it ran on.</p>
+    </section>
 
     <nav class="pager">
       <a href="bash-scripting.html"><span class="dir">← Previous</span><br><span class="t">Bash Scripting</span></a>
       <a class="next" href="ai-coding-agents.html"><span class="dir">Next →</span><br><span class="t">Working with AI Coding Agents</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
