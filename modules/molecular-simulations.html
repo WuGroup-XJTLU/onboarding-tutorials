@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Molecular Simulations · WuGroup Onboarding</title>
-<meta name="description" content="Building systems with Packmol, running MD/MC well, and the generation to production workflow.">
+<meta name="description" content="Building systems with Packmol, running MD/MC correctly, the generation-equilibration-production workflow with equilibration criteria, and trajectory analysis.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,138 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 08</p>
       <h1>Molecular Simulations</h1>
-      <p class="summary">Building systems with Packmol, running MD/MC well, and the generation to production workflow.</p>
+      <p class="summary">Molecular simulation is the group's core method. The hard part is not pressing "run" — it is building a sensible system, knowing when it has equilibrated, and trusting the numbers you get out. This module is built around <strong>good practice</strong>, not button-pushing.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Build a starting configuration with Packmol</li>
+          <li>Understand MD integration, ensembles, thermostats and force fields</li>
+          <li>Follow the generation → equilibration → production workflow</li>
+          <li>Decide when a system is actually equilibrated</li>
+          <li>Analyse trajectories (RDF, MSD, RMSD)</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li><a href="statistical-mechanics.html">Module 07 — Statistical Mechanics</a></li><li>Basic Python</li><li><a href="hpc-slurm.html">Module 03 — HPC</a> (to run jobs)</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>45–50 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Molecular dynamics (MD) integrates Newton's equations for every atom to generate a trajectory; Monte Carlo (MC) samples configurations stochastically. Both are machines for drawing samples from the ensembles you met in <a href="statistical-mechanics.html">Module 07</a> — so that a time or ensemble average over the trajectory estimates a thermodynamic property. Everything below is in service of one goal: making those averages <em>trustworthy</em>.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Building the system (generation)</h2>
+      <p>A simulation is only as good as its starting point. You need atoms placed without unphysical overlaps, at roughly the right density, in a box with the right boundary conditions. <strong>Packmol</strong> packs molecules into a region while respecting minimum-distance constraints — ideal for building solvent boxes, mixtures, and polymer melts. You then assign a <strong>force field</strong> (OPLS, CHARMM, AMBER, …) that defines the bonded and non-bonded interactions.</p>
+      <div class="callout">
+        <p class="callout-title">Get the density and the force field right first</p>
+        <p>A box that is too dense will explode on the first step; the wrong force field gives precise answers to the wrong question. Sanity-check both before you run anything long.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2 · The MD engine</h2>
+      <p>MD advances the system in small <strong>timesteps</strong> (typically ~1–2 fs) with a symplectic integrator — <strong>velocity Verlet</strong>. You choose an <strong>ensemble</strong> to match your question (see Module 07): <code>NVE</code> for pure dynamics, <code>NVT</code> to control temperature (via a <strong>thermostat</strong> — Nosé–Hoover, Langevin), <code>NPT</code> to control pressure too (via a <strong>barostat</strong>). <strong>Periodic boundary conditions</strong> remove surface effects so a small box mimics bulk. The group mainly uses <strong>LAMMPS</strong> and <strong>GROMACS</strong>.</p>
+      <p><strong>Monte Carlo</strong> takes a different route: propose a move, accept it with the Metropolis probability <code>min(1, e^(−ΔE/k_BT))</code>, repeat. MC is powerful when you care about equilibrium configurations rather than real-time dynamics.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · The good-practice workflow</h2>
+      <p>Never run a production simulation straight from a freshly built box. The disciplined pipeline is <strong>generation → equilibration → production</strong>, and the middle stage is where most mistakes happen.</p>
+
+      <figure>
+        <svg viewBox="0 0 580 210" role="img" aria-labelledby="wfttl wfdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="wfttl">The generation to production workflow</title>
+          <desc id="wfdesc">Build and minimise the system, then equilibrate; check whether energy, temperature and density have converged; if not, keep equilibrating; once converged, run production and then analyse.</desc>
+          <defs>
+            <marker id="wa" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+            <marker id="wa2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8a4b2f"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <rect x="8"  y="30" width="110" height="44" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="63" y="49" text-anchor="middle" fill="#0a463c">Generate</text><text x="63" y="65" text-anchor="middle" fill="#4a534f" font-size="10">Packmol · minimise</text>
+            <rect x="150" y="30" width="110" height="44" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="205" y="49" text-anchor="middle" fill="#0a463c">Equilibrate</text><text x="205" y="65" text-anchor="middle" fill="#4a534f" font-size="10">NVT → NPT</text>
+            <polygon points="300,52 360,26 420,52 360,78" fill="#f0e5da" stroke="#8a4b2f"/><text x="360" y="49" text-anchor="middle" fill="#7a3f22" font-size="11">converged?</text><text x="360" y="63" text-anchor="middle" fill="#7a3f22" font-size="9.5">E, T, ρ stable</text>
+            <rect x="452" y="30" width="112" height="44" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="508" y="49" text-anchor="middle" fill="#0a463c">Production</text><text x="508" y="65" text-anchor="middle" fill="#4a534f" font-size="10">collect data</text>
+            <rect x="452" y="140" width="112" height="40" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="508" y="164" text-anchor="middle" fill="#146c3d">Analyse</text>
+            <line x1="118" y1="52" x2="148" y2="52" stroke="#10685a" stroke-width="2" marker-end="url(#wa)"/>
+            <line x1="260" y1="52" x2="298" y2="52" stroke="#10685a" stroke-width="2" marker-end="url(#wa)"/>
+            <line x1="420" y1="52" x2="450" y2="52" stroke="#10685a" stroke-width="2" marker-end="url(#wa)"/>
+            <text x="435" y="44" fill="#146c3d" font-size="10">yes</text>
+            <line x1="508" y1="74" x2="508" y2="138" stroke="#146c3d" stroke-width="2" marker-end="url(#wa)"/>
+            <path d="M360,78 C360,120 205,120 205,76" fill="none" stroke="#8a4b2f" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#wa2)"/>
+            <text x="283" y="112" text-anchor="middle" fill="#8a4b2f" font-size="10.5">no → keep equilibrating</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Only start production once the system has genuinely equilibrated. Data collected before equilibration is contaminated by the artificial starting configuration.</figcaption>
+      </figure>
+
+      <p><strong>How do you know it's equilibrated?</strong> Don't guess from the clock — check that the relevant quantities have <em>stopped drifting</em>:</p>
+      <ul>
+        <li><strong>Energy</strong> (potential/total) has plateaued — no systematic upward or downward trend.</li>
+        <li><strong>Temperature</strong> fluctuates around the target, not toward it.</li>
+        <li><strong>Density / box volume</strong> (in NPT) has levelled off.</li>
+        <li>Structural measures (e.g. the RDF, radius of gyration for polymers) are stable between the first and second half of the window.</li>
+        <li>Use <strong>block averaging</strong> to estimate uncertainties and confirm the running average has converged. Discard the pre-equilibrium portion before averaging.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>4 · Analysing trajectories</h2>
+      <p>The production trajectory is your data. The workhorses:</p>
+      <ul>
+        <li><strong>Radial distribution function</strong> <em>g(r)</em> — local structure: how likely you are to find a particle at distance <em>r</em> from another.</li>
+        <li><strong>Mean-squared displacement</strong> (MSD) — from its slope you get the diffusion coefficient (Einstein relation).</li>
+        <li><strong>RMSD</strong> — deviation from a reference structure over time (common for biomolecules).</li>
+      </ul>
+      <p>Compute these with tools like <a href="https://www.mdanalysis.org/">MDAnalysis</a> (Python) or the engine's own analysis utilities, and visualise trajectories with <a href="https://www.ks.uiuc.edu/Research/vmd/">VMD</a>.</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · Running on the cluster</h2>
+      <p>Real simulations run on the HPC cluster, not your laptop. Load the engine with <code>module load</code>, request appropriate resources, and submit with <code>sbatch</code> — see <a href="hpc-slurm.html">Module 03</a> for the SLURM specifics and script templates.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Frenkel &amp; Smit, <em>Understanding Molecular Simulation</em></strong> — the standard text; superb descriptive introductions to nearly every technique (watch for equation typos).</li>
+        <li><strong>Allen &amp; Tildesley, <em>Computer Simulation of Liquids</em></strong> — the other classic, strong on algorithms and analysis.</li>
+        <li><strong>Best Practices for Foundations in Molecular Simulations</strong> — LiveCoMS. <a href="https://livecomsjournal.org/index.php/livecoms/article/view/v1i1e5957">livecomsjournal.org · v1i1e5957</a></li>
+        <li><strong>Best Practices for Quantification of Uncertainty and Sampling Quality</strong> — LiveCoMS. <a href="https://livecomsjournal.org/index.php/livecoms/article/view/v1i1e5067">livecomsjournal.org · v1i1e5067</a></li>
+        <li><strong>GROMACS tutorials</strong> (J. Lemkul) · <strong>LAMMPS docs</strong> · <strong>Packmol</strong>. <a href="http://www.mdtutorials.com/gmx/">mdtutorials.com/gmx</a> · <a href="https://docs.lammps.org/">docs.lammps.org</a> · <a href="https://m3g.github.io/packmol/">m3g.github.io/packmol</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Build a simple system with Packmol (e.g. a Lennard-Jones fluid or a small solvent box).</li>
+        <li>Minimise, then equilibrate in NVT and NPT; <strong>plot energy, temperature and density vs. time</strong> and identify the point at which each has converged.</li>
+        <li>Run a short production simulation on the cluster.</li>
+        <li>From the production trajectory, compute and plot the <strong>RDF</strong> and the <strong>MSD</strong> (and estimate the diffusion coefficient from the MSD slope).</li>
+      </ol>
+      <p><strong>Deliverable:</strong> your input/build files, the equilibration plots with the equilibration point marked and justified, and the RDF/MSD figures.</p>
+    </section>
 
     <nav class="pager">
       <a href="statistical-mechanics.html"><span class="dir">← Previous</span><br><span class="t">Statistical Mechanics</span></a>
       <a class="next" href="polymer-physics.html"><span class="dir">Next →</span><br><span class="t">Polymer Physics</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
