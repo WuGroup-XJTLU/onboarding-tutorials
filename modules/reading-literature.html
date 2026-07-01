@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reading Academic Literature · WuGroup Onboarding</title>
-<meta name="description" content="Finding papers, reading actively, and keeping structured notes you can actually reuse.">
+<meta name="description" content="Finding papers, reading actively with the three-pass method, and keeping structured, reusable notes.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,121 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
-      <h1>Reading Academic Literature</h1>
-      <p class="summary">Finding papers, reading actively, and keeping structured notes you can actually reuse.</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 05</p>
+      <h1>Reading Academic Literature Effectively</h1>
+      <p class="summary">You will read more papers in a PhD than you can possibly read word-for-word. Reading well means triaging fast, extracting what matters, and taking notes you will actually reuse a year later.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Find relevant papers efficiently</li>
+          <li>Triage a paper in a few minutes</li>
+          <li>Read actively with the three-pass method</li>
+          <li>Keep structured, searchable notes</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li>None — start any time</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>10–15 hours</li></ul>
+      </div>
     </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Reading is the single most frequent activity in research, and most people are never taught to do it deliberately. The goal is not to read everything — it is to decide quickly what deserves your attention, get the most out of the papers that do, and remember it. A good reading habit compounds: the notes you take this month make next month's reading faster.</p>
+    </section>
+
+    <section class="section">
+      <h2>Finding papers</h2>
+      <ul>
+        <li><strong>Google Scholar</strong> — broad search; follow the "Cited by" and "Related articles" links to walk outward from a key paper, and set up alerts for topics or authors.</li>
+        <li><strong>Web of Science / Scopus</strong> — curated indexes with citation tracking (via your XJTLU library login), good for systematic searching.</li>
+        <li><strong>arXiv</strong> and <strong>ChemRxiv</strong> — preprints, often months ahead of publication in physics/ML and chemistry.</li>
+        <li><strong>Follow the field.</strong> Track a few key groups and authors; their recent papers and reference lists are a map of what matters.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>The three-pass method</h2>
+      <p>Rather than reading start-to-finish, read in three increasingly deep passes (after S. Keshav). Most papers only ever get pass 1 from you — and that is fine.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="tpttl tpdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="tpttl">The three-pass reading funnel</title>
+          <desc id="tpdesc">A funnel: many papers enter pass one, a triage of about five minutes; fewer proceed to pass two, a careful read; a few reach pass three, a deep reconstruction.</desc>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">
+            <polygon points="20,20 540,20 430,80 130,80" fill="#e2ebe6" stroke="#10685a"/>
+            <polygon points="130,90 430,90 360,150 200,150" fill="#e6ddcf" stroke="#c3b9a3"/>
+            <polygon points="200,160 360,160 320,200 240,200" fill="#f0e5da" stroke="#8a4b2f"/>
+            <text x="280" y="55" text-anchor="middle" fill="#0a463c"><tspan font-weight="700">Pass 1</tspan>  ·  title, abstract, headings, conclusion  ·  ~5 min → relevant?</text>
+            <text x="280" y="125" text-anchor="middle" fill="#4a534f"><tspan font-weight="700">Pass 2</tspan>  ·  read carefully, skim derivations  ·  grasp the content</text>
+            <text x="280" y="185" text-anchor="middle" fill="#7a3f22"><tspan font-weight="700">Pass 3</tspan>  ·  reconstruct it yourself</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Every paper gets Pass 1; only papers central to your work earn Pass 3. The funnel is how you keep up with a field without drowning.</figcaption>
+      </figure>
+
+      <ul>
+        <li><strong>Pass 1 (~5 min):</strong> read the title, abstract, section headings, figures, and conclusion. Decide: is this relevant, and is it credible? Most papers stop here.</li>
+        <li><strong>Pass 2 (~1 hour):</strong> read carefully but skim heavy derivations. Understand the contribution, the method, the evidence, and the figures. You should be able to summarise it to a labmate.</li>
+        <li><strong>Pass 3 (several hours):</strong> for the handful of papers your work builds on — reconstruct the results, check the assumptions, and note what you would do differently.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Active reading</h2>
+      <p>Read with questions in mind rather than passively highlighting. For any paper worth a second pass, be able to answer: <em>What problem does it solve? What is the key idea? What did they actually do? What are the assumptions and limitations? How does it relate to my work?</em> Mark the parts you don't understand — those are exactly what to ask about in group meeting.</p>
+    </section>
+
+    <section class="section">
+      <h2>Keeping notes you'll reuse</h2>
+      <p>A note you can't find later is a note you didn't take. Keep short, structured, searchable notes — plain text or Markdown works well and stays portable. A simple per-paper template:</p>
+      <pre>@Author_Year  "Short title"
+  Citation : full reference (+ DOI); keep a BibTeX entry for LaTeX
+  One line : what it is, in your own words
+  Key idea : the main contribution
+  Method   : how they did it
+  Findings : the results that matter to you
+  Relevance: why it matters for my project
+  Questions: what's unclear / to follow up</pre>
+      <p>Keep the BibTeX entry for each paper alongside the note so writing the reference list later is trivial. Whether you organise these in files or a citation manager, the discipline — one structured note per paper — is what pays off.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>"How to Read a Paper"</strong> — S. Keshav. The three-pass method, four pages, worth reading twice. <a href="https://web.stanford.edu/class/ee384m/Handouts/HowtoReadPaper.pdf">Stanford PDF</a></li>
+        <li><strong>"Ten simple rules for reading a scientific paper"</strong> — Carey et al., <em>PLOS Comput. Biol.</em> 2020. <a href="https://doi.org/10.1371/journal.pcbi.1008032">doi.org/10.1371/journal.pcbi.1008032</a></li>
+        <li><strong>Google Scholar</strong> — search, "cited by", and alerts. <a href="https://scholar.google.com/">scholar.google.com</a></li>
+        <li><strong>arXiv</strong> · <strong>ChemRxiv</strong> — preprint servers. <a href="https://arxiv.org/">arxiv.org</a> · <a href="https://chemrxiv.org/">chemrxiv.org</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>Choose three papers relevant to your intended project. Then:</p>
+      <ol>
+        <li>Apply Pass 1 to all three and write one sentence each on whether (and why) they're relevant.</li>
+        <li>Give the most relevant one a full Pass 2 and write a structured note using the template above.</li>
+        <li>Write a short paragraph explaining how the three papers relate to one another and to your project.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the three structured notes (with BibTeX entries) plus the synthesis paragraph.</p>
+    </section>
 
     <nav class="pager">
       <a href="ai-coding-agents.html"><span class="dir">← Previous</span><br><span class="t">Working with AI Coding Agents</span></a>
       <a class="next" href="literature-review.html"><span class="dir">Next →</span><br><span class="t">Doing a Literature Review</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
