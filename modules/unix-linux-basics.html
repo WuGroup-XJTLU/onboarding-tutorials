@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Unix/Linux Basics · WuGroup Onboarding</title>
-<meta name="description" content="The filesystem, the shell, files &amp; permissions, and connecting to remote machines.">
+<meta name="description" content="The filesystem, the shell, files & permissions, text tools, processes, and connecting to remote machines.">
 <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -16,23 +16,203 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 1 · Foundational &amp; Tooling</p>
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 01</p>
       <h1>Unix/Linux Basics</h1>
-      <p class="summary">The filesystem, the shell, files &amp; permissions, and connecting to remote machines.</p>
+      <p class="summary">Almost all of the group's computing happens on Linux — your laptop's terminal, the group workstations, and the XJTLU cluster. This module gets you fluent in the shell so everything after it feels natural.</p>
     </div>
   </header>
 
   <main class="container prose">
-    <div class="callout">
-      <p class="callout-title">Coming soon</p>
-      <p>This module is being written. It will cover the topics above with worked
-         examples, original figures, curated resources, and a hands-on deliverable.</p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Move around the filesystem and manage files from the command line</li>
+          <li>Read and set file permissions</li>
+          <li>Combine small tools with pipes and redirection</li>
+          <li>Inspect and control processes</li>
+          <li>Log in to a remote machine and copy files to it</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul><li>A terminal (macOS/Linux built-in; Windows: WSL or MobaXterm)</li><li>No prior command-line experience assumed</li></ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>12–15 hours</li></ul>
+      </div>
     </div>
 
+    <section class="section">
+      <h2>Overview</h2>
+      <p>A <strong>shell</strong> is a program that reads the commands you type and asks the operating system to run them. On Linux and macOS the usual shell is <code>bash</code> (or <code>zsh</code>, which behaves almost identically for everything here). Working in the shell feels slow for a day and then becomes far faster than clicking: it is scriptable, it works identically on your laptop and on a supercomputer, and it is how you will drive every simulation and analysis tool the group uses.</p>
+      <p>You do not need to memorise everything. Aim to recognise what is possible and to know how to look things up — <code>man &lt;command&gt;</code> and <code>&lt;command&gt; --help</code> are always there, and <a href="https://explainshell.com/">explainshell.com</a> will annotate any command you paste into it.</p>
+    </section>
+
+    <section class="section">
+      <h2>The filesystem &amp; moving around</h2>
+      <p>Unix organises everything into one tree that starts at the root, <code>/</code>. Your files live under your <em>home</em> directory, written <code>~</code> (e.g. <code>/home/alice</code>). A <strong>path</strong> is an address in this tree: <em>absolute</em> paths start at <code>/</code>, <em>relative</em> paths start from where you currently are.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 190" role="img" aria-labelledby="fsttl fsdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="fsttl">The Unix filesystem tree</title>
+          <desc id="fsdesc">A tree rooted at slash, branching to bin, etc, and home; home branches to a user directory alice, which contains projects and data subdirectories.</desc>
+          <g font-family="ui-monospace, Menlo, monospace" font-size="13">
+            <g stroke="#c3b9a3" stroke-width="1.5" fill="none">
+              <path d="M60,55 H500"/>
+              <path d="M140,55 V78"/><path d="M300,55 V78"/><path d="M60,50 V78"/><path d="M502,55 V78"/>
+              <path d="M300,104 V120"/><path d="M220,120 H380"/>
+              <path d="M220,120 V138"/><path d="M380,120 V138"/>
+            </g>
+            <g>
+              <rect x="40"  y="24" width="40" height="26" rx="5" fill="#e2ebe6" stroke="#10685a"/><text x="60"  y="41" text-anchor="middle" fill="#0a463c">/</text>
+              <rect x="112" y="78" width="56" height="26" rx="5" fill="#f0e9db" stroke="#c3b9a3"/><text x="140" y="95" text-anchor="middle" fill="#4a534f">bin</text>
+              <rect x="474" y="78" width="56" height="26" rx="5" fill="#f0e9db" stroke="#c3b9a3"/><text x="502" y="95" text-anchor="middle" fill="#4a534f">etc</text>
+              <rect x="30"  y="78" width="60" height="26" rx="5" fill="#f0e9db" stroke="#c3b9a3"/><text x="60"  y="95" text-anchor="middle" fill="#4a534f">…</text>
+              <rect x="266" y="78" width="68" height="26" rx="5" fill="#e2ebe6" stroke="#10685a"/><text x="300" y="95" text-anchor="middle" fill="#0a463c">home</text>
+              <rect x="262" y="120" width="76" height="26" rx="5" fill="#e2ebe6" stroke="#10685a"/><text x="300" y="137" text-anchor="middle" fill="#0a463c">alice ~</text>
+              <rect x="180" y="138" width="80" height="26" rx="5" fill="#f0e9db" stroke="#c3b9a3"/><text x="220" y="155" text-anchor="middle" fill="#4a534f">projects</text>
+              <rect x="348" y="138" width="64" height="26" rx="5" fill="#f0e9db" stroke="#c3b9a3"/><text x="380" y="155" text-anchor="middle" fill="#4a534f">data</text>
+            </g>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Everything hangs off a single root <code>/</code>. Your home directory <code>~</code> is where your own files live; the absolute path to <code>projects</code> here is <code>/home/alice/projects</code>.</figcaption>
+      </figure>
+
+      <p>The core navigation commands:</p>
+      <pre>pwd                 # print working directory — "where am I?"
+ls                  # list files here
+ls -la              # long listing, including hidden (dot) files
+cd projects         # change into ./projects (relative)
+cd /home/alice      # jump somewhere by absolute path
+cd ..               # go up one level
+cd                  # go home (~)</pre>
+    </section>
+
+    <section class="section">
+      <h2>Working with files &amp; directories</h2>
+      <pre>mkdir -p runs/2026/test    # make directories, parents included
+cp  a.dat backup/          # copy
+mv  old.dat new.dat        # move / rename
+rm  junk.log               # remove a file  (there is no undo — be careful)
+rm -r olddir/              # remove a directory and its contents
+cat  small.txt             # dump a file to the screen
+less big.log               # scroll a large file (q to quit, / to search)
+head -n 20 f.csv           # first 20 lines;  tail -n 20  for the last 20
+find . -name "*.xyz"       # search the tree for matching files</pre>
+      <div class="callout">
+        <p class="callout-title">On deleting things</p>
+        <p><code>rm</code> is permanent — there is no recycle bin. Double-check the path before you run <code>rm -r</code>, and never run <code>rm -rf /</code> or a stray <code>rm -rf *</code> in the wrong directory. When unsure, <code>ls</code> first to see exactly what a wildcard matches.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Permissions</h2>
+      <p>Every file has an owner, a group, and three sets of permissions — <strong>r</strong>ead, <strong>w</strong>rite, e<strong>x</strong>ecute — for the owner, the group, and everyone else. <code>ls -l</code> shows them as a ten-character string like <code>-rwxr-xr--</code>.</p>
+      <pre>chmod +x run.sh          # make a script executable
+chmod 644 notes.txt      # rw-r--r--  (owner writes, others read)
+chmod 755 bin/           # rwxr-xr-x  (typical for a directory)
+chown alice:group f.dat  # change owner/group (needs privileges)</pre>
+      <p>The three-digit form treats <code>rwx</code> as bits: <code>r=4, w=2, x=1</code>, summed per field. So <code>7 = rwx</code>, <code>6 = rw-</code>, <code>5 = r-x</code>.</p>
+    </section>
+
+    <section class="section">
+      <h2>Pipes, redirection &amp; text tools</h2>
+      <p>The Unix philosophy is <em>small tools that each do one thing, combined with pipes</em>. A pipe <code>|</code> sends one command's output into the next command's input; redirection <code>&gt;</code> sends output into a file.</p>
+
+      <figure>
+        <svg viewBox="0 0 560 110" role="img" aria-labelledby="pipettl pipedesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="pipettl">A shell pipeline</title>
+          <desc id="pipedesc">The command cat data.log feeds into grep ERROR, which feeds into wc -l, whose result is redirected into a file count.txt.</desc>
+          <defs>
+            <marker id="pa" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-monospace, Menlo, monospace" font-size="12.5">
+            <rect x="6"   y="42" width="118" height="40" rx="7" fill="#e2ebe6" stroke="#10685a"/><text x="65"  y="66" text-anchor="middle" fill="#0a463c">cat data.log</text>
+            <rect x="168" y="42" width="118" height="40" rx="7" fill="#e2ebe6" stroke="#10685a"/><text x="227" y="66" text-anchor="middle" fill="#0a463c">grep ERROR</text>
+            <rect x="330" y="42" width="90" height="40" rx="7" fill="#e2ebe6" stroke="#10685a"/><text x="375" y="66" text-anchor="middle" fill="#0a463c">wc -l</text>
+            <rect x="462" y="42" width="92" height="40" rx="7" fill="#f0e9db" stroke="#c3b9a3"/><text x="508" y="66" text-anchor="middle" fill="#4a534f">count.txt</text>
+            <line x1="124" y1="62" x2="165" y2="62" stroke="#10685a" stroke-width="2" marker-end="url(#pa)"/>
+            <line x1="286" y1="62" x2="327" y2="62" stroke="#10685a" stroke-width="2" marker-end="url(#pa)"/>
+            <line x1="420" y1="62" x2="459" y2="62" stroke="#10685a" stroke-width="2" marker-end="url(#pa)"/>
+            <text x="145" y="35" text-anchor="middle" fill="#7c847f">|</text>
+            <text x="307" y="35" text-anchor="middle" fill="#7c847f">|</text>
+            <text x="440" y="35" text-anchor="middle" fill="#7c847f">&gt;</text>
+          </g>
+        </svg>
+        <figcaption>Figure 2. A pipeline: count how many lines of <code>data.log</code> contain <code>ERROR</code> and write the number to <code>count.txt</code> — <code>cat data.log | grep ERROR | wc -l &gt; count.txt</code>.</figcaption>
+      </figure>
+
+      <pre>grep "pattern" file        # print lines matching a pattern
+wc -l file                 # count lines  (-w words, -c bytes)
+sort file | uniq -c        # sort, then count unique lines
+cut -d, -f2 data.csv       # take the 2nd comma-separated column
+command &gt; out.txt          # redirect output to a file (overwrite)
+command &gt;&gt; out.txt         # append instead of overwrite
+command 2&gt; err.txt         # redirect errors (stream 2) separately</pre>
+    </section>
+
+    <section class="section">
+      <h2>Processes</h2>
+      <p>A running program is a <strong>process</strong>. You will need to watch long simulations and occasionally stop a runaway job.</p>
+      <pre>top    (or htop)           # live view of running processes (q to quit)
+ps aux | grep lammps       # find a specific process
+./long_job.sh &amp;            # run in the background; note the job/PID
+jobs                       # list background jobs in this shell
+kill  12345                # ask process 12345 to stop
+kill -9 12345              # force-kill if it will not stop
+Ctrl-C                     # interrupt the foreground command
+Ctrl-Z then bg             # suspend, then resume in the background</pre>
+    </section>
+
+    <section class="section">
+      <h2>Remote access</h2>
+      <p>The group's real computing runs on remote machines. You reach them with <code>ssh</code> and copy files with <code>scp</code> or <code>rsync</code>. (Getting onto the XJTLU cluster specifically — VPN, login nodes, and the SLURM scheduler — is covered in <a href="hpc-slurm.html">Module 03</a>.)</p>
+      <pre>ssh alice@server.example.edu        # open a shell on a remote machine
+scp results.dat alice@server:~/in/  # copy a local file to the remote
+scp alice@server:~/out/traj.xtc .   # copy a remote file to here
+rsync -av runs/ alice@server:~/runs/ # sync a directory (efficient, resumable)</pre>
+      <div class="callout">
+        <p class="callout-title">Set up SSH keys early</p>
+        <p>Generate a key pair with <code>ssh-keygen</code> and copy the public key to the server (<code>ssh-copy-id</code>). You then log in without typing a password every time — and scripts can connect non-interactively.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>A terminal editor</h2>
+      <p>You will often edit files without a graphical editor — over SSH, for example. Learn at least one terminal editor. <code>nano</code> is the gentlest (shortcuts shown at the bottom of the screen; <code>Ctrl-O</code> saves, <code>Ctrl-X</code> exits). <code>vim</code> is more powerful and everywhere; if you open it by accident, press <code>Esc</code> then type <code>:q!</code> to quit without saving.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>The Unix Workbench</strong> — Sean Kross. A free, beginner-friendly online book that mirrors this module closely. <a href="https://seankross.com/the-unix-workbench/">seankross.com/the-unix-workbench</a></li>
+        <li><strong>Software Carpentry — The Unix Shell</strong> — a hands-on lesson widely used to teach researchers the shell. <a href="https://swcarpentry.github.io/shell-novice/">swcarpentry.github.io/shell-novice</a></li>
+        <li><strong>explainshell</strong> — paste any command to see each flag explained. <a href="https://explainshell.com/">explainshell.com</a></li>
+        <li><strong>man pages &amp; <code>--help</code></strong> — your first stop for any command, always available offline.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <p>From a fresh terminal, do the following and keep a record of the commands you used:</p>
+      <ol>
+        <li>Create the directory structure <code>~/onboarding/unix/{data,scripts,results}</code> in a single command.</li>
+        <li>Download or create a text file of at least 100 lines in <code>data/</code>. Using a pipeline, count how many lines contain a word of your choice and save that number to <code>results/count.txt</code>.</li>
+        <li>Write a one-line shell script <code>scripts/hello.sh</code> that prints a message, make it executable with <code>chmod</code>, and run it.</li>
+        <li>Show the permissions of everything in <code>scripts/</code> with <code>ls -l</code> and explain, in a sentence, what the permission string on <code>hello.sh</code> means.</li>
+        <li>If you have access to a remote machine (or the cluster), <code>scp</code> your <code>results/count.txt</code> to it and back.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> a short text file (or notebook) listing the commands you ran for each step and their output.</p>
+    </section>
+
     <nav class="pager">
-      <a href="../index.html"><span class="dir">← Back</span><br><span class="t">Home</span></a>
+      <a href="../index.html"><span class="dir">← Back</span><br><span class="t">All modules</span></a>
       <a class="next" href="bash-scripting.html"><span class="dir">Next →</span><br><span class="t">Bash Scripting</span></a>
     </nav>
+
   </main>
 
   <footer class="site-foot">
