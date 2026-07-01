@@ -96,7 +96,7 @@ ssh &lt;username&gt;@xeclogin.hpc.xjtlu.edu.cn   # XEC campus</pre>
 rsync --archive --partial --progress ./runs/  &lt;username&gt;@dtn.hpc.xjtlu.edu.cn:~/runs/</pre>
     </section>
 
-    <section class="section">
+    <section class="section" id="modules">
       <h2>4 · Load software with modules</h2>
       <p>Software is provided as <strong>environment modules</strong> — you load what you need rather than installing it yourself:</p>
       <pre>module avail                 # list available software
@@ -106,7 +106,7 @@ module purge                 # unload everything</pre>
       <p>Compilers and libraries (gcc, Intel oneAPI/MKL/MPI, OpenMPI, CMake, CUDA) load the same way. For Python, the platform ships ready-made Conda environments — after <code>module load anaconda3</code>, run <code>conda env list</code> to see them (e.g. <code>base</code>, <code>pytorch-base</code>, <code>tf-env-base</code>), and <code>source activate &lt;env&gt;</code> to use one.</p>
     </section>
 
-    <section class="section">
+    <section class="section" id="slurm">
       <h2>5 · SLURM: the scheduler</h2>
       <div class="callout">
         <p class="callout-title">The golden rule</p>
@@ -129,7 +129,7 @@ slurm-tool    # your storage quota, Account, QoS and limits at a glance</pre>
       <p>Use <code>sinfo</code> for the live list (partitions and limits change — the <a href="https://hpc.xjtlu.edu.cn/">HPC docs</a> are authoritative). <code>salloc</code> exists for quick interactive debugging only — release it as soon as you're done, and use <code>sbatch</code> for real work.</p>
     </section>
 
-    <section class="section">
+    <section class="section" id="job-script">
       <h2>6 · Write &amp; submit a job script</h2>
       <p>A SLURM batch script is a normal Bash script whose top comment lines (<code>#SBATCH</code>) request resources. A CPU example:</p>
       <pre>#!/bin/bash
@@ -156,7 +156,7 @@ $ ls 2023.out 2023.err       # results appear in the files you named</pre>
 #SBATCH --cpus-per-task=4</pre>
     </section>
 
-    <section class="section">
+    <section class="section" id="etiquette">
       <h2>7 · Etiquette</h2>
       <ul>
         <li><strong>Never compute on the login node</strong> — it's shared; submit a job instead.</li>

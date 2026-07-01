@@ -37,7 +37,12 @@
       </div>
       <div class="meta-card">
         <h4>Prerequisites</h4>
-        <ul><li><a href="statistical-mechanics.html">Module 07 — Statistical Mechanics</a></li><li>Basic Python</li><li><a href="hpc-slurm.html">Module 03 — HPC</a> (to run jobs)</li></ul>
+        <ul>
+          <li><a href="statistical-mechanics.html">Module 07 — Statistical Mechanics</a></li>
+          <li><a href="hpc-slurm.html">Module 03 — HPC &amp; SLURM</a> (to run jobs)</li>
+          <li>Basic Python — reading files, numpy arrays, matplotlib plots (no dedicated module yet)</li>
+          <li>Assumes <a href="unix-linux-basics.html">Module 01 — Unix</a> &amp; <a href="bash-scripting.html">Module 02 — Bash</a> (SSH, running scripts)</li>
+        </ul>
       </div>
       <div class="meta-card">
         <h4>Estimated time</h4>
@@ -48,6 +53,20 @@
     <section class="section">
       <h2>Overview</h2>
       <p>Molecular dynamics (MD) integrates Newton's equations for every atom to generate a trajectory; Monte Carlo (MC) samples configurations stochastically. Both are machines for drawing samples from the ensembles you met in <a href="statistical-mechanics.html">Module 07</a> — so that a time or ensemble average over the trajectory estimates a thermodynamic property. Everything below is in service of one goal: making those averages <em>trustworthy</em>.</p>
+    </section>
+
+    <section class="section">
+      <h2>Software you need</h2>
+      <p>This module uses <strong>Packmol</strong> (system building), an MD engine — the group mainly uses <strong>LAMMPS</strong> and <strong>GROMACS</strong> — plus <strong>MDAnalysis</strong> (Python trajectory analysis) and <strong>VMD</strong> (visualisation). Where each lives depends on whether you are testing or doing real work.</p>
+      <ul>
+        <li><strong>On the cluster (all real runs).</strong> Don't install the engines yourself — they are provided as environment modules. Look up the name on the cluster and load exactly what you find; the exact module strings are <em>not fixed</em>, so confirm them with <code>module avail</code> rather than trusting a name written here:
+          <pre>module avail                     # everything installed
+module avail | grep -i lammps    # find the engine you want
+module load &lt;name-you-found&gt;      # the exact string module avail printed</pre>
+          Python tools such as MDAnalysis come from a Conda environment: after <code>module load anaconda3</code>, use <code>conda env list</code> and <code>source activate &lt;env&gt;</code> exactly as in <a href="hpc-slurm.html#modules">Module 03 §4</a>. Install packages into your own environment only inside an interactive session or a job — <strong>never build or install heavy software on the shared login node</strong>.</li>
+        <li><strong>On your own machine (tiny test systems only).</strong> A local install is handy for building and debugging a small box before you submit. Install from each tool's official docs — <a href="https://m3g.github.io/packmol/">Packmol</a>, <a href="https://docs.lammps.org/Install.html">LAMMPS</a>, <a href="https://manual.gromacs.org/current/install-guide/">GROMACS</a>, <a href="https://www.mdanalysis.org/">MDAnalysis</a> — and keep systems small. Production-scale work always goes to the cluster.</li>
+        <li><strong>VMD</strong> is a graphical application: run it <a href="https://www.ks.uiuc.edu/Research/vmd/">locally</a> to inspect trajectories, not on a login node.</li>
+      </ul>
     </section>
 
     <section class="section">
@@ -103,6 +122,13 @@
         <li>Structural measures (e.g. the RDF, radius of gyration for polymers) are stable between the first and second half of the window.</li>
         <li>Use <strong>block averaging</strong> to estimate uncertainties and confirm the running average has converged. Discard the pre-equilibrium portion before averaging.</li>
       </ul>
+
+      <p>Make these checks <em>operational</em> rather than eyeballed:</p>
+      <ul>
+        <li><strong>Fit the drift.</strong> Fit a straight line to the potential (or total) energy over the last ~20% of the run and treat it as equilibrated when the slope is statistically consistent with zero. A useful rough target is a slope well under a fraction of a percent of the mean energy per nanosecond — but calibrate the threshold to your own system rather than treating any single number as universal.</li>
+        <li><strong>Split-half test.</strong> Compute a structural quantity (e.g. the RDF) or the density separately from the first and second halves of a window; if the two overlap within noise, that window is stationary — if they differ visibly, keep equilibrating.</li>
+        <li><strong>Block averaging, concretely.</strong> Divide the post-equilibration data into blocks of increasing size; as the block size grows, the estimated standard error of the mean stops shrinking once the blocks are effectively independent. That plateau is both your convergence signal and an honest error bar.</li>
+      </ul>
     </section>
 
     <section class="section">
@@ -114,11 +140,79 @@
         <li><strong>RMSD</strong> — deviation from a reference structure over time (common for biomolecules).</li>
       </ul>
       <p>Compute these with tools like <a href="https://www.mdanalysis.org/">MDAnalysis</a> (Python) or the engine's own analysis utilities, and visualise trajectories with <a href="https://www.ks.uiuc.edu/Research/vmd/">VMD</a>.</p>
+      <p><strong>What "Basic Python" means here:</strong> reading a trajectory with MDAnalysis, computing simple quantities with numpy, and plotting them with matplotlib. If those are new to you, work through a short numpy + matplotlib tutorial before the exercise — there is no dedicated Python module in the curriculum yet, so ask the group for a current recommendation.</p>
     </section>
 
     <section class="section">
       <h2>5 · Running on the cluster</h2>
-      <p>Real simulations run on the HPC cluster, not your laptop. Load the engine with <code>module load</code>, request appropriate resources, and submit with <code>sbatch</code> — see <a href="hpc-slurm.html">Module 03</a> for the SLURM specifics and script templates.</p>
+      <p>Real simulations run on the HPC cluster, not your laptop. This section shows the <em>shape</em> of a simulation job; <a href="hpc-slurm.html#slurm">Module 03 §5–§6</a> is the full SLURM reference — commands, partitions, monitoring, etiquette — and everything here builds on it rather than repeating it.</p>
+
+      <h3>Find and load the engine</h3>
+      <p>Engines are environment modules — don't guess the name, look it up on the cluster and load exactly what you find, then confirm it starts:</p>
+      <pre>module avail | grep -i lammps    # or gromacs, packmol, ...
+module load &lt;name-you-found&gt;      # the exact string module avail printed
+lmp -help    #  or:  gmx --version     # confirm the engine actually runs</pre>
+
+      <div class="callout">
+        <p class="callout-title">Every specific below is an example — verify it on the cluster</p>
+        <p>The module names, wall-times, and core / GPU counts in the scripts that follow are <strong>placeholders to right-size for your own system</strong>, not established cluster facts. Confirm module names with <code>module avail</code>, and set the resource requests from a short test run. Only the partition and QoS names (<code>cpu6348</code> / <code>qos=26cores</code> and <code>gpua800</code> / <code>qos=4a800</code>) are fixed — they are the ones documented in <a href="hpc-slurm.html#slurm">Module 03 §5</a>.</p>
+      </div>
+
+      <h3>A CPU job (e.g. LAMMPS)</h3>
+      <pre>#!/bin/bash
+#SBATCH --job-name=md-prod
+#SBATCH --partition=cpu6348       # CPU partition (Module 03)
+#SBATCH --qos=26cores             # QoS matching that partition
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=26      # cores → MPI ranks; right-size for your system
+#SBATCH --time=24:00:00           # wall-time estimate — verify from a short run
+#SBATCH --output=%j.out
+#SBATCH --error=%j.err
+
+module load &lt;lammps-module&gt;        # find the exact name: module avail | grep -i lammps
+srun lmp -in in.production         # srun launches one rank per --ntasks</pre>
+
+      <h3>A GPU job (e.g. GROMACS)</h3>
+      <pre>#!/bin/bash
+#SBATCH --job-name=md-prod-gpu
+#SBATCH --partition=gpua800        # GPU partition (Module 03)
+#SBATCH --qos=4a800                # QoS matching that partition
+#SBATCH --gres=gpu:1               # number of GPUs — start with 1
+#SBATCH --cpus-per-task=8          # CPU cores feeding the GPU; right-size
+#SBATCH --time=24:00:00            # wall-time estimate — verify from a short run
+#SBATCH --output=%j.out
+#SBATCH --error=%j.err
+
+module load &lt;gromacs-module&gt;        # find the exact name: module avail | grep -i gromacs
+gmx mdrun -deffnm prod -nb gpu     # run the pre-built prod.tpr on the GPU</pre>
+
+      <p>Submit, watch, and collect exactly as in <a href="hpc-slurm.html#job-script">Module 03 §6</a>: <code>sbatch prod.slurm</code>, then <code>squeue -u $USER</code>, then read <code>&lt;jobid&gt;.out</code>.</p>
+
+      <div class="callout">
+        <p class="callout-title">Before you submit</p>
+        <ul>
+          <li>Your input and topology files are on the shared cluster file system, not just your laptop.</li>
+          <li>You have run the <em>same</em> system for a handful of steps locally or in a short interactive session — it starts and doesn't blow up.</li>
+          <li>You have estimated wall-time from that short run (ns/day) and requested a little more — not a blind 7 days.</li>
+          <li>You are requesting only the cores / GPUs the engine will actually use; idle reserved resources block everyone else (<a href="hpc-slurm.html#etiquette">Module 03 §7</a>).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6 · Common mistakes</h2>
+      <div class="callout">
+        <p class="callout-title">Catch these before they cost you a run</p>
+        <ul>
+          <li><strong>Skipping energy minimisation.</strong> Starting MD from an un-minimised box almost always blows up in the first few steps.</li>
+          <li><strong>Starting production too early.</strong> If the density is still drifting in NPT the system hasn't equilibrated, and the data is contaminated by the starting configuration.</li>
+          <li><strong>Too large a timestep.</strong> Use ~1 fs for all-atom force fields; <strong>2 fs only when the fastest bonds are constrained</strong> (SHAKE / LINCS). A too-large step silently corrupts the dynamics or crashes the run.</li>
+          <li><strong>Production in NVE by accident.</strong> Without a thermostat the temperature drifts — use NVT/NPT unless you specifically want conserved-energy dynamics.</li>
+          <li><strong>Output frequency too coarse.</strong> If the <code>thermo</code> / log output is too infrequent you cannot see whether equilibration happened at all.</li>
+          <li><strong>Never testing small first.</strong> Debug on a tiny system for a few steps before committing a long, many-core job.</li>
+          <li><strong>Trusting one short run.</strong> A single trajectory has no error bar — plan for block averaging or replicate runs (see §3).</li>
+        </ul>
+      </div>
     </section>
 
     <section class="section">
@@ -135,12 +229,14 @@
     <section class="section">
       <h2>Exercise / Deliverable</h2>
       <ol>
+        <li><strong>Set up your tools.</strong> Get Packmol, an MD engine, and MDAnalysis working — locally for building, on the cluster for running — and verify each one starts with a trivial command (e.g. <code>lmp -help</code>, <code>gmx --version</code>).</li>
         <li>Build a simple system with Packmol (e.g. a Lennard-Jones fluid or a small solvent box).</li>
-        <li>Minimise, then equilibrate in NVT and NPT; <strong>plot energy, temperature and density vs. time</strong> and identify the point at which each has converged.</li>
-        <li>Run a short production simulation on the cluster.</li>
+        <li>Minimise, then equilibrate in NVT and NPT; <strong>plot energy, temperature and density vs. time</strong> and mark the point at which each has converged, justifying it with a drift or split-half check (§3).</li>
+        <li>Run a short production simulation on the cluster with <code>sbatch</code>. Record the job ID, the <code>squeue -u $USER</code> line showing it running, and the wall-time it actually used versus what you requested.</li>
         <li>From the production trajectory, compute and plot the <strong>RDF</strong> and the <strong>MSD</strong> (and estimate the diffusion coefficient from the MSD slope).</li>
+        <li>In one or two sentences, name one thing you would change on a re-run (longer equilibration, a different timestep, more replicate runs, …) and why.</li>
       </ol>
-      <p><strong>Deliverable:</strong> your input/build files, the equilibration plots with the equilibration point marked and justified, and the RDF/MSD figures.</p>
+      <p><strong>Deliverable:</strong> your input/build files, the equilibration plots with the equilibration point marked and justified, the RDF/MSD figures, your job script plus the <code>squeue</code>/wall-time evidence from step 4, and your one-line reflection from step 6.</p>
     </section>
 
     <nav class="pager">
