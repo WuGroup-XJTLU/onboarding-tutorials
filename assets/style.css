@@ -162,10 +162,11 @@ pre {
 }
 .area--sci .mod::before { background: var(--area2); }
 .area--research .mod::before { background: var(--area3); }
-.mod:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(28,35,33,.08), 0 18px 40px -18px rgba(28,35,33,.4); border-color: var(--accent); }
-.area--sci .mod:hover { border-color: var(--area2); }
-.area--research .mod:hover { border-color: var(--area3); }
-.mod:hover::before { opacity: 1; }
+.mod:not(.mod--soon):hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(28,35,33,.08), 0 18px 40px -18px rgba(28,35,33,.4); border-color: var(--accent); }
+.area--sci .mod:not(.mod--soon):hover { border-color: var(--area2); }
+.area--research .mod:not(.mod--soon):hover { border-color: var(--area3); }
+.mod:not(.mod--soon):hover::before { opacity: 1; }
+.mod--soon { cursor: default; }
 .mod .num {
   font-family: var(--mono);
   font-size: .72rem;

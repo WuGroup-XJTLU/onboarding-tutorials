@@ -1,7 +1,7 @@
 # WuGroup Onboarding Tutorials
 
 A self-paced onboarding curriculum for new members of the **Wu Research Group (XJTLU)**,
-covering foundational tooling and computational-science foundations.
+covering foundational tooling, computational-science foundations, and research skills.
 
 The site is **standalone static HTML** — open `index.html` directly in a browser
 (no build step, no server, no CDN, works offline).
