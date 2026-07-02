@@ -37,7 +37,7 @@
       </div>
       <div class="meta-card">
         <h4>Prerequisites</h4>
-        <ul><li><a href="unix-linux-basics.html">Module 01 — Unix</a></li><li><a href="bash-scripting.html">Module 02 — Bash</a></li></ul>
+        <ul><li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a></li><li><a href="bash-scripting.html">Module 02 — Bash Scripting</a></li></ul>
       </div>
       <div class="meta-card">
         <h4>Estimated time</h4>
@@ -94,6 +94,14 @@ ssh &lt;username&gt;@xeclogin.hpc.xjtlu.edu.cn   # XEC campus</pre>
       <p>On Windows, <strong>MobaXterm</strong> or <strong>PuTTY</strong> are the recommended clients. Move files through the <strong>data-transfer node</strong> (<code>dtn.hpc.xjtlu.edu.cn</code>, or <code>xecdtn.hpc.xjtlu.edu.cn</code>) with <code>scp</code>/<code>rsync</code> (or WinSCP on Windows):</p>
       <pre>scp -r ./inputs  &lt;username&gt;@dtn.hpc.xjtlu.edu.cn:~/runs/
 rsync --archive --partial --progress ./runs/  &lt;username&gt;@dtn.hpc.xjtlu.edu.cn:~/runs/</pre>
+      <p>Two conveniences worth setting up once on your own machine in <code>~/.ssh/config</code>: a short <strong>Host alias</strong> so you can type <code>ssh hpc</code> instead of the full address, and a <strong>persistent (multiplexed) connection</strong> so repeated logins reuse one authenticated channel rather than prompting every time:</p>
+      <pre>Host hpc
+    HostName login.hpc.xjtlu.edu.cn
+    User &lt;username&gt;
+    ControlMaster auto                 # reuse one connection...
+    ControlPath  ~/.ssh/cm-%r@%h:%p    # ...over this socket...
+    ControlPersist 10m                 # ...kept alive for 10 min</pre>
+      <p>After this, <code>ssh hpc</code> (and <code>scp file hpc:~/runs/</code>) just work, and a second session opens instantly without re-authenticating.</p>
     </section>
 
     <section class="section" id="modules">
@@ -119,6 +127,7 @@ sbatch job.slurm   # submit a batch job
 scancel &lt;jobid&gt;     # cancel a job
 sacct         # reports on your completed jobs
 slurm-tool    # your storage quota, Account, QoS and limits at a glance</pre>
+      <p><code>slurm-tool</code> is an <strong>XJTLU-specific convenience wrapper</strong>, not part of standard SLURM — don't expect to find it on other clusters. The rest (<code>sinfo</code>, <code>squeue</code>, <code>sbatch</code>, <code>scancel</code>, <code>sacct</code>) are standard SLURM and carry over anywhere.</p>
       <p>Jobs run in <strong>partitions</strong> (queues), each paired with a <strong>QoS</strong> that sets limits (the maximum wall-time is up to 7 days):</p>
       <div class="meta-grid">
         <div class="meta-card"><h4>cpu6348</h4><ul><li>general CPU jobs</li><li>1–26 cores by default</li></ul></div>
@@ -172,7 +181,7 @@ $ ls 2023.out 2023.err       # results appear in the files you named</pre>
       <ul class="resource-list">
         <li><strong>XJTLU HPC documentation</strong> — the authoritative reference (accounts, login, software, SLURM, examples). On campus / via VPN. <a href="https://hpc.xjtlu.edu.cn/">hpc.xjtlu.edu.cn</a></li>
         <li><strong>SLURM official documentation</strong> — the scheduler's own manuals for <code>sbatch</code>, <code>srun</code>, <code>squeue</code>, etc. <a href="https://slurm.schedmd.com/documentation.html">slurm.schedmd.com</a></li>
-        <li><strong>Module 01 — Unix</strong> and <strong>Module 02 — Bash</strong> — SSH, the shell, and scripting all carry directly over to the cluster.</li>
+        <li><strong><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a></strong> and <strong><a href="bash-scripting.html">Module 02 — Bash Scripting</a></strong> — SSH, the shell, and scripting all carry directly over to the cluster.</li>
       </ul>
     </section>
 

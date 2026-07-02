@@ -34,13 +34,14 @@
           <li>Keep data, outputs and secrets out of the repo with <code>.gitignore</code></li>
           <li>Work on branches and merge them back</li>
           <li>Collaborate on GitHub with remotes and pull requests</li>
+          <li>Recover from mistakes — unstage, discard, amend and revert</li>
         </ul>
       </div>
       <div class="meta-card">
         <h4>Prerequisites</h4>
         <ul>
           <li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a> (the shell, paths, editing files)</li>
-          <li><a href="bash-scripting.html">Module 02 — Bash</a> (helpful — the scripts you write are what you'll track)</li>
+          <li><a href="bash-scripting.html">Module 02 — Bash Scripting</a> (helpful — the scripts you write are what you'll track)</li>
         </ul>
       </div>
       <div class="meta-card">
@@ -119,7 +120,7 @@ results/         # generated figures and data
 .env</pre>
       <div class="callout">
         <p class="callout-title">Data and secrets stay out of Git</p>
-        <p>Keep raw and large data in your allocated storage (on the cluster, see <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a>), not in the repo. Never commit passwords, API keys, or tokens — if you do, treat them as compromised and rotate them. Commit the <em>script that generates</em> a figure, not a hundred copies of the figure itself.</p>
+        <p>Keep raw and large data in your allocated storage (on the cluster, see <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM Job Submission</a>), not in the repo. Never commit passwords, API keys, or tokens — if you do, treat them as compromised and rotate them. Commit the <em>script that generates</em> a figure, not a hundred copies of the figure itself.</p>
       </div>
     </section>
 
