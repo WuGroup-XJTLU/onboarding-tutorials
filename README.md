@@ -24,15 +24,23 @@ modules/_TEMPLATE.html  Canonical page template — copy this for a new module
 modules/<slug>.html     One page per module
 ```
 
-## Curriculum (10 modules)
+## Curriculum (17 modules)
 
-**Area 1 — Foundational / Tooling**
-1. Unix/Linux Basics · 2. Bash Scripting · 3. HPC & SLURM Job Submission ·
-4. Working with AI Coding Agents · 5. Reading Academic Literature · 6. Doing a Literature Review
+**Area 1 — Foundational & Tooling Skills**
+1. Unix/Linux Basics · 2. Bash Scripting · 3. Version Control with Git ·
+4. Python for Scientific Computing · 5. Scientific Software & Environments ·
+6. HPC & SLURM Job Submission · 7. Working with AI Coding Agents
 
 **Area 2 — Scientific Domain Foundations**
-7. Statistical Mechanics · 8. Molecular Simulations · 9. Polymer Physics ·
-10. Machine Learning for Chemistry & Materials
+8. Statistical Mechanics · 9. Molecular Simulations · 10. Polymer Physics ·
+11. Machine Learning for Chemistry & Materials
+
+**Area 3 — Research Skills**
+12. Reading Academic Literature · 13. Doing a Literature Review ·
+14. Managing Research Data & Computational Projects *(planned)* ·
+15. Scientific Writing & Publishing *(planned)* ·
+16. Presenting Research: Talks & Posters *(planned)* ·
+17. Research Integrity & Responsible AI Use *(planned)*
 
 ## How to add / write a module
 
