@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Version Control with Git · WuGroup Onboarding</title>
+<meta name="description" content="Why version control matters, the add-commit-push model, branching and merging, .gitignore for research data, and collaborating on GitHub with pull requests.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="container">
+    <nav class="breadcrumb"><a href="../index.html">← WuGroup Onboarding</a></nav>
+  </div>
+
+  <header class="mod-masthead">
+    <div class="container">
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 03</p>
+      <h1>Version Control with Git</h1>
+      <p class="summary">Version control is the memory of a project: every change recorded, every past state recoverable, and a clear answer to "which version of the code made this figure?". Git is the tool the group — and almost all of science and software — uses for it. Later modules assume you work inside version control; this is where you learn to.</p>
+    </div>
+  </header>
+
+  <main class="container prose">
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Explain what version control is and why every project needs it</li>
+          <li>Configure Git and create or clone a repository</li>
+          <li>Use the core cycle: <code>status</code> → <code>add</code> → <code>commit</code>, and read the history</li>
+          <li>Keep data, outputs and secrets out of the repo with <code>.gitignore</code></li>
+          <li>Work on branches and merge them back</li>
+          <li>Collaborate on GitHub with remotes and pull requests</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul>
+          <li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a> (the shell, paths, editing files)</li>
+          <li><a href="bash-scripting.html">Module 02 — Bash</a> (helpful — the scripts you write are what you'll track)</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>12–15 hours</li></ul>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Without version control, a project drifts into a folder full of <code>analysis_final.py</code>, <code>analysis_final_v2.py</code>, and <code>analysis_really_final.py</code> — and no reliable way to say what changed between them or to get a working version back after a bad edit. <strong>Version control</strong> solves this by recording your project as a series of snapshots (<em>commits</em>), each with a message, an author, and a timestamp. You can inspect any past state, compare any two, and undo with confidence.</p>
+      <p>For research this is not a nicety — it is part of doing reproducible work. When a reviewer asks how you produced a result two years from now, the commit that generated it, and the exact code at that point, are still there. <strong>Git</strong> is the dominant version-control system; <a href="https://github.com/WuGroup-XJTLU">GitHub</a> is where the group hosts its repositories and reviews changes. This module teaches the everyday Git you need before the modules that assume it — <a href="ai-coding-agents.html">Module 05</a> in particular tells you to "work inside version control" so every AI-assisted change is a reviewable diff.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Set up and create a repository</h2>
+      <p>Git usually ships with Linux and macOS (check with <code>git --version</code>; install from <a href="https://git-scm.com/downloads">git-scm.com</a> otherwise). Tell Git who you are once, so your commits are attributed correctly:</p>
+      <pre>git config --global user.name  "Your Name"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main   # name the first branch "main"</pre>
+      <p>You then either start a repository in an existing folder, or copy an existing one from GitHub:</p>
+      <pre>git init                 # turn the current directory into a repository
+# ...or...
+git clone https://github.com/WuGroup-XJTLU/&lt;repo&gt;.git   # copy an existing one</pre>
+    </section>
+
+    <section class="section">
+      <h2>2 · The core cycle: add, commit, push</h2>
+      <p>Git has three places a change can live: your <strong>working tree</strong> (the files as they are on disk), the <strong>staging area</strong> (changes you've marked to include in the next snapshot), and the <strong>repository</strong> (the committed history). <code>git add</code> moves changes into staging; <code>git commit</code> records staged changes as a permanent snapshot; <code>git push</code> sends your commits to the shared copy on GitHub.</p>
+
+      <figure>
+        <svg viewBox="0 0 580 180" role="img" aria-labelledby="gvttl gvdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="gvttl">The Git working tree, staging area, local repository and remote</title>
+          <desc id="gvdesc">Changes flow left to right: the working tree is staged with git add, staged changes are recorded with git commit into the local repository, and commits are sent to the GitHub remote with git push; git pull brings changes from the remote back to the working tree.</desc>
+          <defs>
+            <marker id="gv" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+            <marker id="gv2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8a4b2f"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="11.5">
+            <rect x="8"   y="44" width="104" height="46" rx="8" fill="#f0e9db" stroke="#c3b9a3"/><text x="60"  y="64" text-anchor="middle" fill="#4a534f">Working tree</text><text x="60"  y="80" text-anchor="middle" fill="#7c847f" font-size="10">edit files</text>
+            <rect x="158" y="44" width="104" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="210" y="64" text-anchor="middle" fill="#0a463c">Staging area</text><text x="210" y="80" text-anchor="middle" fill="#4a534f" font-size="10">next snapshot</text>
+            <rect x="308" y="44" width="104" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="360" y="64" text-anchor="middle" fill="#0a463c">Local repo</text><text x="360" y="80" text-anchor="middle" fill="#4a534f" font-size="10">history</text>
+            <rect x="458" y="44" width="114" height="46" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="515" y="64" text-anchor="middle" fill="#146c3d">Remote · GitHub</text><text x="515" y="80" text-anchor="middle" fill="#4a534f" font-size="10">shared copy</text>
+            <line x1="112" y1="67" x2="156" y2="67" stroke="#10685a" stroke-width="2" marker-end="url(#gv)"/><text x="134" y="38" text-anchor="middle" fill="#0a463c" font-size="10.5">git add</text>
+            <line x1="262" y1="67" x2="306" y2="67" stroke="#10685a" stroke-width="2" marker-end="url(#gv)"/><text x="284" y="38" text-anchor="middle" fill="#0a463c" font-size="10.5">git commit</text>
+            <line x1="412" y1="67" x2="456" y2="67" stroke="#10685a" stroke-width="2" marker-end="url(#gv)"/><text x="434" y="38" text-anchor="middle" fill="#0a463c" font-size="10.5">git push</text>
+            <path d="M515,90 C515,142 60,142 60,92" fill="none" stroke="#8a4b2f" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#gv2)"/>
+            <text x="287" y="136" text-anchor="middle" fill="#8a4b2f" font-size="10.5">git pull — bring others' commits back into your working tree</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. The everyday Git flow. Stage with <code>git add</code>, snapshot with <code>git commit</code>, share with <code>git push</code>; <code>git pull</code> integrates other people's commits before you continue.</figcaption>
+      </figure>
+
+      <p>In practice the loop is short and you run it constantly:</p>
+      <pre>git status                 # what's changed, what's staged
+git add analysis.py        # stage a specific file (or `git add -p` to pick hunks)
+git commit -m "Add RDF calculation for the solvent box"
+git log --oneline          # a compact history
+git diff                   # unstaged changes;  git diff --staged for staged ones</pre>
+      <div class="callout">
+        <p class="callout-title">Write commit messages for the next reader</p>
+        <p>A good message says <em>why</em>, not just <em>what</em>: "Fix off-by-one in bin edges (RDF was shifted by half a bin)" is worth ten "update"s. Commit in small, logical steps — one idea per commit — so the history stays reviewable and any single change is easy to undo.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>3 · What not to commit: <code>.gitignore</code></h2>
+      <p>A repository is for <strong>source</strong> — code, scripts, small input files, and text you author. It is <em>not</em> for large data, generated outputs, or secrets. Committing a multi-gigabyte trajectory or a directory of figures bloats the repo for everyone and can't be fully undone. List the things Git should ignore in a <code>.gitignore</code> file at the repo root:</p>
+      <pre># .gitignore — patterns Git will not track
+*.dcd            # large MD trajectories
+*.xtc
+*.log
+__pycache__/     # generated Python bytecode
+results/         # generated figures and data
+*.key            # never commit secrets or credentials
+.env</pre>
+      <div class="callout">
+        <p class="callout-title">Data and secrets stay out of Git</p>
+        <p>Keep raw and large data in your allocated storage (on the cluster, see <a href="hpc-slurm.html">Module 04 — HPC &amp; SLURM</a>), not in the repo. Never commit passwords, API keys, or tokens — if you do, treat them as compromised and rotate them. Commit the <em>script that generates</em> a figure, not a hundred copies of the figure itself.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>4 · Branching and merging</h2>
+      <p>A <strong>branch</strong> is an independent line of work. Instead of editing <code>main</code> directly, you make a branch for a feature or experiment, commit freely, and merge it back once it works — so <code>main</code> always stays in a known-good state.</p>
+      <pre>git switch -c feature/rdf-analysis   # create and switch to a new branch
+# ... edit, add, commit as usual ...
+git switch main                      # go back to the main line
+git merge feature/rdf-analysis       # bring the finished work in</pre>
+      <p>If the same lines changed on both branches, Git reports a <strong>merge conflict</strong> and marks the spots with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> / <code>=======</code> / <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>. Open the file, keep the correct combination, delete the markers, then <code>git add</code> the file and <code>git commit</code> to finish the merge. Conflicts are normal and local — nothing is lost.</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · Collaborating on GitHub</h2>
+      <p>GitHub stores a shared copy of a repository (a <strong>remote</strong>, conventionally named <code>origin</code>) and adds review tools on top of Git. The collaboration loop:</p>
+      <ul>
+        <li><strong>Clone</strong> the repo (or <strong>fork</strong> it, if you don't have write access), then make a branch for your change.</li>
+        <li><strong>Push</strong> your branch: <code>git push -u origin feature/rdf-analysis</code>.</li>
+        <li>Open a <strong>pull request (PR)</strong> — a proposal to merge your branch, showing the full diff. Collaborators review it, request changes, and approve.</li>
+        <li>Once approved, the PR is <strong>merged</strong> into <code>main</code>; everyone else <code>git pull</code>s to catch up.</li>
+      </ul>
+      <p>Pull requests are how the group reviews code before it lands — the same reviewing discipline <a href="ai-coding-agents.html">Module 05</a> applies to AI-generated diffs. The group's repositories live under the <a href="https://github.com/WuGroup-XJTLU">WuGroup-XJTLU</a> organisation.</p>
+    </section>
+
+    <section class="section">
+      <h2>6 · Undoing mistakes</h2>
+      <p>Almost anything in Git is recoverable. The common fixes:</p>
+      <ul>
+        <li><strong>Unstage a file</strong> (keep the edit, just don't commit it yet): <code>git restore --staged &lt;file&gt;</code>.</li>
+        <li><strong>Discard uncommitted changes</strong> to a file (irreversible for that edit): <code>git restore &lt;file&gt;</code>.</li>
+        <li><strong>Fix the last commit</strong> (wrong message, forgot a file): stage the fix, then <code>git commit --amend</code>.</li>
+        <li><strong>Undo a commit that's already shared</strong>: <code>git revert &lt;hash&gt;</code> records a new commit that reverses it — safe for history others have.</li>
+      </ul>
+      <div class="callout">
+        <p class="callout-title">Don't rewrite shared history</p>
+        <p>Amending or rebasing commits you've already pushed rewrites history other people may have based work on. Use <code>git revert</code> (a new, forward commit) for anything already on the shared remote; save <code>--amend</code> and rebase for commits that are still only local.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Pro Git</strong> — Scott Chacon &amp; Ben Straub. The definitive book, free online; chapters 1–3 cover everything here. <a href="https://git-scm.com/book/en/v2">git-scm.com/book</a></li>
+        <li><strong>GitHub — Git &amp; GitHub docs</strong> — practical guides for clone, branch, push, and pull requests. <a href="https://docs.github.com/en/get-started">docs.github.com/en/get-started</a></li>
+        <li><strong>Git official documentation</strong> — the reference for every command and option. <a href="https://git-scm.com/doc">git-scm.com/doc</a></li>
+        <li><strong>Oh Shit, Git!?!</strong> — plain-language recipes for getting out of common Git tangles. <a href="https://ohshitgit.com/">ohshitgit.com</a></li>
+        <li><strong>Software Carpentry — Version Control with Git</strong> — a gentle, hands-on lesson for researchers. <a href="https://swcarpentry.github.io/git-novice/">swcarpentry.github.io/git-novice</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Create a repository (<code>git init</code>) for a small project — e.g. the <code>summarise.sh</code> script from <a href="bash-scripting.html">Module 02</a> — and make your first commit.</li>
+        <li>Add a <code>.gitignore</code> that excludes a generated-output directory and a data file type, and confirm with <code>git status</code> that those files are no longer tracked.</li>
+        <li>Make two or three further commits with clear messages, then show the history with <code>git log --oneline</code>.</li>
+        <li>Create a branch, make a change on it, switch back to <code>main</code>, and merge the branch in.</li>
+        <li>Create an empty repository on <a href="https://github.com/WuGroup-XJTLU">GitHub</a>, add it as a remote, <code>git push</code> your work, and open a pull request for a small follow-up change on a branch.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the GitHub repository URL, the output of <code>git log --oneline</code> showing your commits and the merge, your <code>.gitignore</code>, and the link to your pull request.</p>
+    </section>
+
+    <nav class="pager">
+      <a href="bash-scripting.html"><span class="dir">← Previous</span><br><span class="t">Bash Scripting</span></a>
+      <a class="next" href="hpc-slurm.html"><span class="dir">Next →</span><br><span class="t">HPC &amp; SLURM Job Submission</span></a>
+    </nav>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <p>Wu Research Group · XJTLU · Module 03 of 11</p>
+      <p><a href="../index.html">All modules</a></p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

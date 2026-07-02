@@ -16,7 +16,7 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 08</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 09</p>
       <h1>Molecular Simulations</h1>
       <p class="summary">Molecular simulation is the group's core method. The hard part is not pressing "run" — it is building a sensible system, knowing when it has equilibrated, and trusting the numbers you get out. This module is built around <strong>good practice</strong>, not button-pushing.</p>
     </div>
@@ -38,8 +38,8 @@
       <div class="meta-card">
         <h4>Prerequisites</h4>
         <ul>
-          <li><a href="statistical-mechanics.html">Module 07 — Statistical Mechanics</a></li>
-          <li><a href="hpc-slurm.html">Module 03 — HPC &amp; SLURM</a> (to run jobs)</li>
+          <li><a href="statistical-mechanics.html">Module 08 — Statistical Mechanics</a></li>
+          <li><a href="hpc-slurm.html">Module 04 — HPC &amp; SLURM</a> (to run jobs)</li>
           <li>Basic Python — reading files, numpy arrays, matplotlib plots (no dedicated module yet)</li>
           <li>Assumes <a href="unix-linux-basics.html">Module 01 — Unix</a> &amp; <a href="bash-scripting.html">Module 02 — Bash</a> (SSH, running scripts)</li>
         </ul>
@@ -52,7 +52,7 @@
 
     <section class="section">
       <h2>Overview</h2>
-      <p>Molecular dynamics (MD) integrates Newton's equations for every atom to generate a trajectory; Monte Carlo (MC) samples configurations stochastically. Both are machines for drawing samples from the ensembles you met in <a href="statistical-mechanics.html">Module 07</a> — so that a time or ensemble average over the trajectory estimates a thermodynamic property. Everything below is in service of one goal: making those averages <em>trustworthy</em>.</p>
+      <p>Molecular dynamics (MD) integrates Newton's equations for every atom to generate a trajectory; Monte Carlo (MC) samples configurations stochastically. Both are machines for drawing samples from the ensembles you met in <a href="statistical-mechanics.html">Module 08</a> — so that a time or ensemble average over the trajectory estimates a thermodynamic property. Everything below is in service of one goal: making those averages <em>trustworthy</em>.</p>
     </section>
 
     <section class="section">
@@ -63,7 +63,7 @@
           <pre>module avail                     # everything installed
 module avail | grep -i lammps    # find the engine you want
 module load &lt;name-you-found&gt;      # the exact string module avail printed</pre>
-          Python tools such as MDAnalysis come from a Conda environment: after <code>module load anaconda3</code>, use <code>conda env list</code> and <code>source activate &lt;env&gt;</code> exactly as in <a href="hpc-slurm.html#modules">Module 03 §4</a>. Install packages into your own environment only inside an interactive session or a job — <strong>never build or install heavy software on the shared login node</strong>.</li>
+          Python tools such as MDAnalysis come from a Conda environment: after <code>module load anaconda3</code>, use <code>conda env list</code> and <code>source activate &lt;env&gt;</code> exactly as in <a href="hpc-slurm.html#modules">Module 04 §4</a>. Install packages into your own environment only inside an interactive session or a job — <strong>never build or install heavy software on the shared login node</strong>.</li>
         <li><strong>On your own machine (tiny test systems only).</strong> A local install is handy for building and debugging a small box before you submit. Install from each tool's official docs — <a href="https://m3g.github.io/packmol/">Packmol</a>, <a href="https://docs.lammps.org/Install.html">LAMMPS</a>, <a href="https://manual.gromacs.org/current/install-guide/">GROMACS</a>, <a href="https://www.mdanalysis.org/">MDAnalysis</a> — and keep systems small. Production-scale work always goes to the cluster.</li>
         <li><strong>VMD</strong> is a graphical application: run it <a href="https://www.ks.uiuc.edu/Research/vmd/">locally</a> to inspect trajectories, not on a login node.</li>
       </ul>
@@ -80,7 +80,7 @@ module load &lt;name-you-found&gt;      # the exact string module avail printed<
 
     <section class="section">
       <h2>2 · The MD engine</h2>
-      <p>MD advances the system in small <strong>timesteps</strong> (typically ~1–2 fs) with a symplectic integrator — <strong>velocity Verlet</strong>. You choose an <strong>ensemble</strong> to match your question (see Module 07): <code>NVE</code> for pure dynamics, <code>NVT</code> to control temperature (via a <strong>thermostat</strong> — Nosé–Hoover, Langevin), <code>NPT</code> to control pressure too (via a <strong>barostat</strong>). <strong>Periodic boundary conditions</strong> remove surface effects so a small box mimics bulk. The group mainly uses <strong>LAMMPS</strong> and <strong>GROMACS</strong>.</p>
+      <p>MD advances the system in small <strong>timesteps</strong> (typically ~1–2 fs) with a symplectic integrator — <strong>velocity Verlet</strong>. You choose an <strong>ensemble</strong> to match your question (see Module 08): <code>NVE</code> for pure dynamics, <code>NVT</code> to control temperature (via a <strong>thermostat</strong> — Nosé–Hoover, Langevin), <code>NPT</code> to control pressure too (via a <strong>barostat</strong>). <strong>Periodic boundary conditions</strong> remove surface effects so a small box mimics bulk. The group mainly uses <strong>LAMMPS</strong> and <strong>GROMACS</strong>.</p>
       <p><strong>Monte Carlo</strong> takes a different route: propose a move, accept it with the Metropolis probability <code>min(1, e^(−ΔE/k_BT))</code>, repeat. MC is powerful when you care about equilibrium configurations rather than real-time dynamics.</p>
     </section>
 
@@ -145,7 +145,7 @@ module load &lt;name-you-found&gt;      # the exact string module avail printed<
 
     <section class="section">
       <h2>5 · Running on the cluster</h2>
-      <p>Real simulations run on the HPC cluster, not your laptop. This section shows the <em>shape</em> of a simulation job; <a href="hpc-slurm.html#slurm">Module 03 §5–§6</a> is the full SLURM reference — commands, partitions, monitoring, etiquette — and everything here builds on it rather than repeating it.</p>
+      <p>Real simulations run on the HPC cluster, not your laptop. This section shows the <em>shape</em> of a simulation job; <a href="hpc-slurm.html#slurm">Module 04 §5–§6</a> is the full SLURM reference — commands, partitions, monitoring, etiquette — and everything here builds on it rather than repeating it.</p>
 
       <h3>Find and load the engine</h3>
       <p>Engines are environment modules — don't guess the name, look it up on the cluster and load exactly what you find, then confirm it starts:</p>
@@ -155,13 +155,13 @@ lmp -help    #  or:  gmx --version     # confirm the engine actually runs</pre>
 
       <div class="callout">
         <p class="callout-title">Every specific below is an example — verify it on the cluster</p>
-        <p>The module names, wall-times, and core / GPU counts in the scripts that follow are <strong>placeholders to right-size for your own system</strong>, not established cluster facts. Confirm module names with <code>module avail</code>, and set the resource requests from a short test run. Only the partition and QoS names (<code>cpu6348</code> / <code>qos=26cores</code> and <code>gpua800</code> / <code>qos=4a800</code>) are fixed — they are the ones documented in <a href="hpc-slurm.html#slurm">Module 03 §5</a>.</p>
+        <p>The module names, wall-times, and core / GPU counts in the scripts that follow are <strong>placeholders to right-size for your own system</strong>, not established cluster facts. Confirm module names with <code>module avail</code>, and set the resource requests from a short test run. Only the partition and QoS names (<code>cpu6348</code> / <code>qos=26cores</code> and <code>gpua800</code> / <code>qos=4a800</code>) are fixed — they are the ones documented in <a href="hpc-slurm.html#slurm">Module 04 §5</a>.</p>
       </div>
 
       <h3>A CPU job (e.g. LAMMPS)</h3>
       <pre>#!/bin/bash
 #SBATCH --job-name=md-prod
-#SBATCH --partition=cpu6348       # CPU partition (Module 03)
+#SBATCH --partition=cpu6348       # CPU partition (Module 04)
 #SBATCH --qos=26cores             # QoS matching that partition
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=26      # cores → MPI ranks; right-size for your system
@@ -175,7 +175,7 @@ srun lmp -in in.production         # srun launches one rank per --ntasks</pre>
       <h3>A GPU job (e.g. GROMACS)</h3>
       <pre>#!/bin/bash
 #SBATCH --job-name=md-prod-gpu
-#SBATCH --partition=gpua800        # GPU partition (Module 03)
+#SBATCH --partition=gpua800        # GPU partition (Module 04)
 #SBATCH --qos=4a800                # QoS matching that partition
 #SBATCH --gres=gpu:1               # number of GPUs — start with 1
 #SBATCH --cpus-per-task=8          # CPU cores feeding the GPU; right-size
@@ -186,7 +186,7 @@ srun lmp -in in.production         # srun launches one rank per --ntasks</pre>
 module load &lt;gromacs-module&gt;        # find the exact name: module avail | grep -i gromacs
 gmx mdrun -deffnm prod -nb gpu     # run the pre-built prod.tpr on the GPU</pre>
 
-      <p>Submit, watch, and collect exactly as in <a href="hpc-slurm.html#job-script">Module 03 §6</a>: <code>sbatch prod.slurm</code>, then <code>squeue -u $USER</code>, then read <code>&lt;jobid&gt;.out</code>.</p>
+      <p>Submit, watch, and collect exactly as in <a href="hpc-slurm.html#job-script">Module 04 §6</a>: <code>sbatch prod.slurm</code>, then <code>squeue -u $USER</code>, then read <code>&lt;jobid&gt;.out</code>.</p>
 
       <div class="callout">
         <p class="callout-title">Before you submit</p>
@@ -194,7 +194,7 @@ gmx mdrun -deffnm prod -nb gpu     # run the pre-built prod.tpr on the GPU</pre>
           <li>Your input and topology files are on the shared cluster file system, not just your laptop.</li>
           <li>You have run the <em>same</em> system for a handful of steps locally or in a short interactive session — it starts and doesn't blow up.</li>
           <li>You have estimated wall-time from that short run (ns/day) and requested a little more — not a blind 7 days.</li>
-          <li>You are requesting only the cores / GPUs the engine will actually use; idle reserved resources block everyone else (<a href="hpc-slurm.html#etiquette">Module 03 §7</a>).</li>
+          <li>You are requesting only the cores / GPUs the engine will actually use; idle reserved resources block everyone else (<a href="hpc-slurm.html#etiquette">Module 04 §7</a>).</li>
         </ul>
       </div>
     </section>
@@ -248,7 +248,7 @@ gmx mdrun -deffnm prod -nb gpu     # run the pre-built prod.tpr on the GPU</pre>
 
   <footer class="site-foot">
     <div class="container">
-      <p>Wu Research Group · XJTLU · Module 08 of 10</p>
+      <p>Wu Research Group · XJTLU · Module 09 of 11</p>
       <p><a href="../index.html">All modules</a></p>
     </div>
   </footer>
