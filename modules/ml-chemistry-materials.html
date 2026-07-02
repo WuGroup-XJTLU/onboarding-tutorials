@@ -16,7 +16,7 @@
 
   <header class="mod-masthead">
     <div class="container">
-      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 11</p>
+      <p class="kicker">Area 2 · Scientific Domain Foundations · Module 13</p>
       <h1>Machine Learning for Chemistry &amp; Materials</h1>
       <p class="summary">Machine learning is reshaping molecular and materials science — predicting properties, running simulations at near-quantum accuracy for a fraction of the cost, and proposing new candidate materials. This module maps the landscape and, just as importantly, its pitfalls.</p>
     </div>
@@ -37,7 +37,7 @@
       </div>
       <div class="meta-card">
         <h4>Prerequisites</h4>
-        <ul><li>Basic Python (numpy, scikit-learn)</li><li>Helpful: <a href="statistical-mechanics.html">M07</a>, <a href="molecular-simulations.html">M08</a></li></ul>
+        <ul><li>Basic Python (numpy, scikit-learn)</li><li>Helpful: <a href="statistical-mechanics.html">M10</a>, <a href="molecular-simulations.html">M11</a></li></ul>
       </div>
       <div class="meta-card">
         <h4>Estimated time</h4>
@@ -104,7 +104,7 @@
 
     <section class="section">
       <h2>6 · A word on pitfalls</h2>
-      <p>ML in science amplifies both good and bad practice. Models are confidently wrong outside their training distribution, metrics can flatter through leakage, and a beautiful prediction is still just a prediction. Treat every ML result the way <a href="ai-coding-agents.html">Module 05</a> treats AI-written code: useful, fast, and to be <strong>verified against ground truth</strong> before you trust it.</p>
+      <p>ML in science amplifies both good and bad practice. Models are confidently wrong outside their training distribution, metrics can flatter through leakage, and a beautiful prediction is still just a prediction. Treat every ML result the way <a href="ai-coding-agents.html">Module 07</a> treats AI-written code: useful, fast, and to be <strong>verified against ground truth</strong> before you trust it.</p>
     </section>
 
     <section class="section">
@@ -121,7 +121,7 @@
       <h2>Exercise / Deliverable</h2>
       <ol>
         <li>Query the Materials Project (via its API / ASE) for a property — e.g. formation energy — across a set of materials, and save a small dataset.</li>
-        <li>Train a simple regression model on a descriptor to predict that property, with an honest train/test split; report the test MAE and plot predicted vs. true.</li>
+        <li>Train a simple regression model on a descriptor to predict that property, with an honest train/test split; report the test MAE and plot predicted vs. true (numpy + matplotlib: <a href="python-scientific-computing.html">Module 04</a>).</li>
         <li><em>(Optional)</em> run a pretrained <strong>MACE</strong> potential on a small structure to compute its energy and forces, and compare the cost to a DFT single-point.</li>
       </ol>
       <p><strong>Deliverable:</strong> the dataset, the trained model's parity plot and test error, and a sentence on where you'd expect the model to fail.</p>
@@ -136,7 +136,7 @@
 
   <footer class="site-foot">
     <div class="container">
-      <p>Wu Research Group · XJTLU · Module 11 of 11</p>
+      <p>Wu Research Group · XJTLU · Module 13 of 13</p>
       <p><a href="../index.html">All modules</a></p>
     </div>
   </footer>
