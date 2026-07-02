@@ -17,6 +17,8 @@
   --accent-soft:  #e2ebe6;
   --area2:        #8a4b2f;   /* warm sienna, for the science area */
   --area2-soft:   #f0e5da;
+  --area3:        #4a5a8a;   /* muted indigo, for the research skills area */
+  --area3-soft:   #e4e7f3;
   --shadow:       0 1px 2px rgba(28,35,33,.06), 0 8px 24px -12px rgba(28,35,33,.22);
 
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
@@ -128,6 +130,7 @@ pre {
   flex: none;
 }
 .area--sci .idx { color: var(--area2); border-color: var(--area2); }
+.area--research .idx { color: var(--area3); border-color: var(--area3); }
 .area-head h2 {
   font-family: var(--serif);
   font-weight: 600;
@@ -158,9 +161,12 @@ pre {
   opacity: .0; transition: opacity .16s ease;
 }
 .area--sci .mod::before { background: var(--area2); }
-.mod:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(28,35,33,.08), 0 18px 40px -18px rgba(28,35,33,.4); border-color: var(--accent); }
-.area--sci .mod:hover { border-color: var(--area2); }
-.mod:hover::before { opacity: 1; }
+.area--research .mod::before { background: var(--area3); }
+.mod:not(.mod--soon):hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(28,35,33,.08), 0 18px 40px -18px rgba(28,35,33,.4); border-color: var(--accent); }
+.area--sci .mod:not(.mod--soon):hover { border-color: var(--area2); }
+.area--research .mod:not(.mod--soon):hover { border-color: var(--area3); }
+.mod:not(.mod--soon):hover::before { opacity: 1; }
+.mod--soon { cursor: default; }
 .mod .num {
   font-family: var(--mono);
   font-size: .72rem;
@@ -259,7 +265,7 @@ figcaption { font-size: .82rem; color: var(--ink-faint); margin-top: .5rem; font
   :root {
     --paper:#14181a; --paper-2:#1b2124; --card:#1c2327; --ink:#e9e6dd; --ink-soft:#b3b8b3;
     --ink-faint:#899089; --rule:#2c3438; --accent:#4fc7b0; --accent-dark:#7ad9c6;
-    --accent-soft:#173029; --area2:#d99a74; --area2-soft:#2a201a; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+    --accent-soft:#173029; --area2:#d99a74; --area2-soft:#2a201a; --area3:#8b9fd4; --area3-soft:#1e2340; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
   }
   .badge--ready { background:#123722; color:#7fe0a6; }
   .badge--soon { background:var(--accent-soft); color:var(--accent-dark); }
