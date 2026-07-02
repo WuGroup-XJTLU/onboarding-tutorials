@@ -52,7 +52,7 @@
     <section class="section">
       <h2>Overview</h2>
       <p>Different projects need different — sometimes conflicting — versions of the same library. Install everything into one global Python and you eventually hit "dependency hell", where upgrading a package for one project breaks another. The fix is to give each project its own <strong>environment</strong>: an isolated set of packages that can't interfere with anything else, and that you can describe in a file precisely enough to recreate months later.</p>
-      <p>For scientific work the group uses <strong>conda</strong> (or its faster drop-in <strong>mamba</strong>), because it installs not just Python packages but the compiled libraries scientific tools depend on. This module covers environments on your own machine; the cluster provides software a related but distinct way, which §6 hands off to <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a>.</p>
+      <p>For scientific work the group uses <strong>conda</strong> (or its faster drop-in <strong>mamba</strong>), because it installs not just Python packages but the compiled libraries scientific tools depend on. This module covers environments on your own machine; the cluster provides software a related but distinct way, which §6 hands off to <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM Job Submission</a>.</p>
     </section>
 
     <section class="section">
@@ -126,7 +126,7 @@ conda env create -f environment.yml                 # recreate it elsewhere</pre
 
     <section class="section">
       <h2>6 · Local environments vs the cluster</h2>
-      <p>Everything above is about software on <strong>your own machine</strong>. The HPC cluster provides software a different way — through <strong>environment modules</strong> and ready-made conda environments — which is taught in <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a> §4. The short version of the hand-off:</p>
+      <p>Everything above is about software on <strong>your own machine</strong>. The HPC cluster provides software a different way — through <strong>environment modules</strong> and ready-made conda environments — which is taught in <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM Job Submission</a> §4. The short version of the hand-off:</p>
       <ul>
         <li><strong>On your machine:</strong> you create and own conda environments, as in this module.</li>
         <li><strong>On the cluster:</strong> you load software the platform already provides rather than installing it yourself; Module 06 covers exactly how.</li>
