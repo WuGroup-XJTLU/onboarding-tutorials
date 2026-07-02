@@ -52,7 +52,7 @@
     <section class="section">
       <h2>Overview</h2>
       <p>Without version control, a project drifts into a folder full of <code>analysis_final.py</code>, <code>analysis_final_v2.py</code>, and <code>analysis_really_final.py</code> — and no reliable way to say what changed between them or to get a working version back after a bad edit. <strong>Version control</strong> solves this by recording your project as a series of snapshots (<em>commits</em>), each with a message, an author, and a timestamp. You can inspect any past state, compare any two, and undo with confidence.</p>
-      <p>For research this is not a nicety — it is part of doing reproducible work. When a reviewer asks how you produced a result two years from now, the commit that generated it, and the exact code at that point, are still there. <strong>Git</strong> is the dominant version-control system; <a href="https://github.com/WuGroup-XJTLU">GitHub</a> is where the group hosts its repositories and reviews changes. This module teaches the everyday Git you need before the modules that assume it — <a href="ai-coding-agents.html">Module 05</a> in particular tells you to "work inside version control" so every AI-assisted change is a reviewable diff.</p>
+      <p>For research this is not a nicety — it is part of doing reproducible work. When a reviewer asks how you produced a result two years from now, the commit that generated it, and the exact code at that point, are still there. <strong>Git</strong> is the dominant version-control system; <a href="https://github.com/WuGroup-XJTLU">GitHub</a> is where the group hosts its repositories and reviews changes. This module teaches the everyday Git you need before the modules that assume it — <a href="ai-coding-agents.html">Module 07</a> in particular tells you to "work inside version control" so every AI-assisted change is a reviewable diff.</p>
     </section>
 
     <section class="section">
@@ -119,7 +119,7 @@ results/         # generated figures and data
 .env</pre>
       <div class="callout">
         <p class="callout-title">Data and secrets stay out of Git</p>
-        <p>Keep raw and large data in your allocated storage (on the cluster, see <a href="hpc-slurm.html">Module 04 — HPC &amp; SLURM</a>), not in the repo. Never commit passwords, API keys, or tokens — if you do, treat them as compromised and rotate them. Commit the <em>script that generates</em> a figure, not a hundred copies of the figure itself.</p>
+        <p>Keep raw and large data in your allocated storage (on the cluster, see <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a>), not in the repo. Never commit passwords, API keys, or tokens — if you do, treat them as compromised and rotate them. Commit the <em>script that generates</em> a figure, not a hundred copies of the figure itself.</p>
       </div>
     </section>
 
@@ -142,7 +142,7 @@ git merge feature/rdf-analysis       # bring the finished work in</pre>
         <li>Open a <strong>pull request (PR)</strong> — a proposal to merge your branch, showing the full diff. Collaborators review it, request changes, and approve.</li>
         <li>Once approved, the PR is <strong>merged</strong> into <code>main</code>; everyone else <code>git pull</code>s to catch up.</li>
       </ul>
-      <p>Pull requests are how the group reviews code before it lands — the same reviewing discipline <a href="ai-coding-agents.html">Module 05</a> applies to AI-generated diffs. The group's repositories live under the <a href="https://github.com/WuGroup-XJTLU">WuGroup-XJTLU</a> organisation.</p>
+      <p>Pull requests are how the group reviews code before it lands — the same reviewing discipline <a href="ai-coding-agents.html">Module 07</a> applies to AI-generated diffs. The group's repositories live under the <a href="https://github.com/WuGroup-XJTLU">WuGroup-XJTLU</a> organisation.</p>
     </section>
 
     <section class="section">
@@ -185,14 +185,14 @@ git merge feature/rdf-analysis       # bring the finished work in</pre>
 
     <nav class="pager">
       <a href="bash-scripting.html"><span class="dir">← Previous</span><br><span class="t">Bash Scripting</span></a>
-      <a class="next" href="hpc-slurm.html"><span class="dir">Next →</span><br><span class="t">HPC &amp; SLURM Job Submission</span></a>
+      <a class="next" href="python-scientific-computing.html"><span class="dir">Next →</span><br><span class="t">Python for Scientific Computing</span></a>
     </nav>
 
   </main>
 
   <footer class="site-foot">
     <div class="container">
-      <p>Wu Research Group · XJTLU · Module 03 of 11</p>
+      <p>Wu Research Group · XJTLU · Module 03 of 13</p>
       <p><a href="../index.html">All modules</a></p>
     </div>
   </footer>

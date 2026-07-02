@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scientific Software &amp; Environments · WuGroup Onboarding</title>
+<meta name="description" content="Isolated conda/mamba environments, reproducible environment.yml files, pip vs conda, and installing the group's scientific stack — plus how local environments relate to the cluster's modules.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="container">
+    <nav class="breadcrumb"><a href="../index.html">← WuGroup Onboarding</a></nav>
+  </div>
+
+  <header class="mod-masthead">
+    <div class="container">
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 05</p>
+      <h1>Scientific Software &amp; Environments</h1>
+      <p class="summary">"It works on my machine" is not a result anyone can reproduce. This module is about installing scientific software into <strong>isolated, reproducible environments</strong> — so the exact software behind a calculation is recorded, shareable, and the same on your laptop as on a colleague's.</p>
+    </div>
+  </header>
+
+  <main class="container prose">
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Explain why isolated environments matter for reproducibility</li>
+          <li>Create and manage environments with conda / mamba</li>
+          <li>Pin and share an environment with <code>environment.yml</code></li>
+          <li>Choose sensibly between <code>conda</code> and <code>pip</code></li>
+          <li>Install the group's scientific stack</li>
+          <li>Understand how local environments relate to the cluster</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul>
+          <li><a href="python-scientific-computing.html">Module 04 — Python for Scientific Computing</a> (you'll manage its packages)</li>
+          <li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a> (the shell)</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>8–12 hours</li></ul>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Different projects need different — sometimes conflicting — versions of the same library. Install everything into one global Python and you eventually hit "dependency hell", where upgrading a package for one project breaks another. The fix is to give each project its own <strong>environment</strong>: an isolated set of packages that can't interfere with anything else, and that you can describe in a file precisely enough to recreate months later.</p>
+      <p>For scientific work the group uses <strong>conda</strong> (or its faster drop-in <strong>mamba</strong>), because it installs not just Python packages but the compiled libraries scientific tools depend on. This module covers environments on your own machine; the cluster provides software a related but distinct way, which §6 hands off to <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a>.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Why environments</h2>
+      <ul>
+        <li><strong>Isolation.</strong> Project A can use one version of a library and Project B another, with no collision.</li>
+        <li><strong>Reproducibility.</strong> A recorded environment means the software behind a result is known exactly — essential when a calculation must be defended or repeated.</li>
+        <li><strong>Cleanliness.</strong> Delete an environment and everything it pulled in is gone; your system Python stays untouched.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>2 · conda and mamba</h2>
+      <p>Install a minimal conda distribution — <a href="https://github.com/conda-forge/miniforge">Miniforge</a> is the group's recommendation (it defaults to the community <code>conda-forge</code> channel and ships <code>mamba</code>). Then create and use an environment:</p>
+      <pre>conda create -n md numpy matplotlib mdanalysis   # new env named "md"
+conda activate md                                 # switch into it
+conda install -c conda-forge scipy                # add a package (conda-forge channel)
+conda list                                        # what's installed here
+conda deactivate                                  # leave the env</pre>
+      <p><strong>mamba</strong> is a faster, drop-in replacement for the <code>conda</code> command — <code>mamba create</code>, <code>mamba install</code> — useful when conda's dependency solver is slow.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · Reproducible environments with <code>environment.yml</code></h2>
+      <p>An environment is only reproducible if it's written down. Capture one, commit the file, and anyone (including future-you) can recreate it exactly:</p>
+
+      <figure>
+        <svg viewBox="0 0 560 160" role="img" aria-labelledby="envttl envdesc" xmlns="http://www.w3.org/2000/svg" style="max-width:560px">
+          <title id="envttl">environment.yml recreates an identical environment anywhere</title>
+          <desc id="envdesc">A single environment.yml file, kept under version control, is used by conda env create to build the same environment on your laptop and on a colleague's machine.</desc>
+          <defs>
+            <marker id="ev" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <rect x="210" y="16" width="140" height="42" rx="8" fill="#f0e5da" stroke="#8a4b2f"/><text x="280" y="35" text-anchor="middle" fill="#7a3f22">environment.yml</text><text x="280" y="50" text-anchor="middle" fill="#4a534f" font-size="10">pinned recipe · in Git</text>
+            <rect x="60"  y="108" width="180" height="40" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="150" y="132" text-anchor="middle" fill="#0a463c">your laptop env</text>
+            <rect x="320" y="108" width="180" height="40" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="410" y="132" text-anchor="middle" fill="#0a463c">colleague's env</text>
+            <line x1="255" y1="58" x2="170" y2="106" stroke="#10685a" stroke-width="2" marker-end="url(#ev)"/>
+            <line x1="305" y1="58" x2="390" y2="106" stroke="#10685a" stroke-width="2" marker-end="url(#ev)"/>
+            <text x="150" y="88" text-anchor="middle" fill="#7c847f" font-size="10">conda env create -f</text>
+            <text x="415" y="88" text-anchor="middle" fill="#7c847f" font-size="10">conda env create -f</text>
+          </g>
+        </svg>
+        <figcaption>Figure 1. A committed <code>environment.yml</code> is the recipe; <code>conda env create -f</code> rebuilds the same environment anywhere.</figcaption>
+      </figure>
+
+      <pre>conda env export --from-history &gt; environment.yml   # a clean, portable recipe
+conda env create -f environment.yml                 # recreate it elsewhere</pre>
+      <p>Keep <code>environment.yml</code> in the project's Git repository (<a href="git-version-control.html">Module 03</a>). <code>--from-history</code> records only the packages you actually asked for, which stays portable across operating systems.</p>
+    </section>
+
+    <section class="section">
+      <h2>4 · pip vs conda</h2>
+      <p>Both install packages; the rule of thumb: <strong>prefer conda</strong> for anything with compiled/native dependencies (numpy, scipy, the MD tools), and use <strong>pip</strong> for pure-Python packages that aren't on conda-forge. If you must mix them, install the conda packages <em>first</em>, then pip <em>into the activated environment</em> — never system-wide.</p>
+    </section>
+
+    <section class="section">
+      <h2>5 · Installing the group's scientific stack</h2>
+      <p>Most of the group's tools are on <code>conda-forge</code>; a couple are installed differently. Always check each tool's official docs for the current instructions.</p>
+      <ul>
+        <li><strong>MDAnalysis, numpy, matplotlib, scipy</strong> — <code>conda install -c conda-forge mdanalysis</code> (pulls in the rest). <a href="https://www.mdanalysis.org/">mdanalysis.org</a></li>
+        <li><strong>LAMMPS</strong> and <strong>GROMACS</strong> — available on conda-forge for small/local test runs (<code>conda install -c conda-forge lammps</code> / <code>gromacs</code>); real runs use the cluster. <a href="https://docs.lammps.org/Install.html">LAMMPS</a> · <a href="https://manual.gromacs.org/current/install-guide/">GROMACS</a></li>
+        <li><strong>Packmol</strong> — on conda-forge, or build from its releases. <a href="https://m3g.github.io/packmol/">m3g.github.io/packmol</a></li>
+        <li><strong>VMD</strong> — a graphical application: download and install it directly for local visualisation. <a href="https://www.ks.uiuc.edu/Research/vmd/">ks.uiuc.edu/Research/vmd</a></li>
+      </ul>
+      <div class="callout">
+        <p class="callout-title">Local installs are for building and testing</p>
+        <p>Installing the MD engines locally is handy for building a system and debugging a tiny run. Production-scale simulations belong on the cluster — see <a href="molecular-simulations.html">Module 11 — Molecular Simulations</a> §"Software you need" for how the two fit together.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6 · Local environments vs the cluster</h2>
+      <p>Everything above is about software on <strong>your own machine</strong>. The HPC cluster provides software a different way — through <strong>environment modules</strong> and ready-made conda environments — which is taught in <a href="hpc-slurm.html">Module 06 — HPC &amp; SLURM</a> §4. The short version of the hand-off:</p>
+      <ul>
+        <li><strong>On your machine:</strong> you create and own conda environments, as in this module.</li>
+        <li><strong>On the cluster:</strong> you load software the platform already provides rather than installing it yourself; Module 06 covers exactly how.</li>
+      </ul>
+      <p>Both worlds meet in the scientific modules — <a href="molecular-simulations.html">Module 11 — Molecular Simulations</a> §"Software you need" walks through choosing local versus cluster software for an actual simulation.</p>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>Miniforge</strong> — the recommended minimal conda installer (conda-forge + mamba). <a href="https://github.com/conda-forge/miniforge">github.com/conda-forge/miniforge</a></li>
+        <li><strong>conda — Managing environments</strong> — the official guide to create/activate/export. <a href="https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html">docs.conda.io · manage environments</a></li>
+        <li><strong>conda-forge documentation</strong> — the community channel most scientific packages ship on. <a href="https://conda-forge.org/docs/">conda-forge.org/docs</a></li>
+        <li><strong>The Turing Way — Reproducible Environments</strong> — why and how, for research. <a href="https://the-turing-way.netlify.app/reproducible-research/renv">the-turing-way · reproducible environments</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Install Miniforge, then create a conda environment containing <code>numpy</code>, <code>matplotlib</code>, and <code>mdanalysis</code>.</li>
+        <li>Activate it and confirm the packages import (<code>python -c "import numpy, matplotlib, MDAnalysis"</code>).</li>
+        <li>Export it to <code>environment.yml</code> with <code>--from-history</code>, then delete the environment and recreate it from the file.</li>
+        <li>Run the <a href="python-scientific-computing.html">Module 04</a> plotting exercise inside this environment to confirm it works end-to-end.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> your <code>environment.yml</code> and a short transcript showing the environment created, exported, recreated, and the packages importing cleanly.</p>
+    </section>
+
+    <nav class="pager">
+      <a href="python-scientific-computing.html"><span class="dir">← Previous</span><br><span class="t">Python for Scientific Computing</span></a>
+      <a class="next" href="hpc-slurm.html"><span class="dir">Next →</span><br><span class="t">HPC &amp; SLURM Job Submission</span></a>
+    </nav>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <p>Wu Research Group · XJTLU · Module 05 of 13</p>
+      <p><a href="../index.html">All modules</a></p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

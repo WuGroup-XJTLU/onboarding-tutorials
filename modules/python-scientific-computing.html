@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python for Scientific Computing · WuGroup Onboarding</title>
+<meta name="description" content="Python as the group's analysis language: the essentials, numpy arrays, reading and writing data, and clear matplotlib plots for every later exercise.">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="container">
+    <nav class="breadcrumb"><a href="../index.html">← WuGroup Onboarding</a></nav>
+  </div>
+
+  <header class="mod-masthead">
+    <div class="container">
+      <p class="kicker">Area 1 · Foundational &amp; Tooling · Module 04</p>
+      <h1>Python for Scientific Computing</h1>
+      <p class="summary">Python is the group's glue language: it reads your simulation output, does the arithmetic, and draws the figures. This module covers just enough of the language, then the two libraries you'll use in every later exercise — <strong>numpy</strong> for numbers and <strong>matplotlib</strong> for plots.</p>
+    </div>
+  </header>
+
+  <main class="container prose">
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <h4>Learning objectives</h4>
+        <ul>
+          <li>Read, run and structure Python (types, control flow, functions)</li>
+          <li>Use <strong>numpy</strong> arrays for numerical data</li>
+          <li>Read and write data files</li>
+          <li>Make clear, labelled <strong>matplotlib</strong> figures and save them</li>
+          <li>Write small analysis code you can re-run and trust</li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Prerequisites</h4>
+        <ul>
+          <li><a href="unix-linux-basics.html">Module 01 — Unix/Linux Basics</a> (the shell, running files)</li>
+          <li><a href="bash-scripting.html">Module 02 — Bash</a> (helpful)</li>
+          <li>To install numpy/matplotlib, see <a href="scientific-software-environments.html">Module 05 — Scientific Software &amp; Environments</a></li>
+        </ul>
+      </div>
+      <div class="meta-card">
+        <h4>Estimated time</h4>
+        <ul><li>20–25 hours</li></ul>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Overview</h2>
+      <p>Almost every result the group produces passes through Python at some point: parsing a trajectory, averaging a column, fitting a slope, plotting energy against time. You do not need to become a software engineer — you need to read data reliably, compute the right numbers, and show them clearly. That is what this module builds.</p>
+      <p>The scientific-Python ecosystem is a small set of libraries that fit together: <strong>numpy</strong> (arrays and math), <strong>matplotlib</strong> (plots), <strong>scipy</strong> (fitting, integration, statistics), <strong>pandas</strong> (tabular data), and domain tools like <a href="https://www.mdanalysis.org/">MDAnalysis</a> and <a href="https://scikit-learn.org/">scikit-learn</a> that you'll meet in later modules. numpy and matplotlib are the foundation the rest stand on, so they are the focus here.</p>
+    </section>
+
+    <section class="section">
+      <h2>1 · Language essentials</h2>
+      <p>Python is dynamically typed and reads almost like pseudocode; <strong>indentation</strong> (not braces) defines blocks. The core types you'll use constantly are numbers, strings, lists, and dictionaries:</p>
+      <pre>temperature = 298.0            # float
+name = "solvent box"           # string
+steps = [100, 200, 400]        # list (ordered, mutable)
+params = {"dt": 1.0, "T": 298} # dict: key → value
+
+for s in steps:                # a block is defined by indentation
+    print(s, "steps")
+
+if params["T"] &gt; 273:
+    print("above freezing")</pre>
+      <p>Factor repeated work into <strong>functions</strong>, and run code either as a script (<code>python analyse.py</code>) or interactively in a Jupyter notebook for exploration:</p>
+      <pre>def celsius(kelvin):
+    """Convert a temperature from kelvin to celsius."""
+    return kelvin - 273.15
+
+print(celsius(298.0))          # 24.85</pre>
+      <div class="callout">
+        <p class="callout-title">Notebooks to explore, scripts to keep</p>
+        <p>Jupyter notebooks are excellent for trying things out. But a result you rely on should live in a plain <code>.py</code> script under <a href="git-version-control.html">version control (Module 03)</a> — a notebook run out of order can produce numbers you can't reproduce.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2 · numpy: arrays and vectorised math</h2>
+      <p>A numpy <strong>array</strong> holds many numbers and lets you operate on them all at once — faster and clearer than looping element by element. This <em>vectorised</em> style is how nearly all scientific Python is written:</p>
+      <pre>import numpy as np
+
+x = np.array([0.0, 1.0, 2.0, 3.0])
+y = x**2 + 1                    # applies to every element → [1, 2, 5, 10]
+
+print(y.mean(), y.std())       # reductions over the array
+print(x[1:3])                  # slicing → [1., 2.]
+print(y[y &gt; 3])                 # boolean masking → [5., 10.]</pre>
+      <p>Arrays can be 2-D (rows and columns), which is how a table of data or a set of coordinates is stored — an <em>N</em>×3 array of atomic positions, say. Operations like <code>arr.mean(axis=0)</code> collapse along one axis.</p>
+    </section>
+
+    <section class="section">
+      <h2>3 · Reading and writing data</h2>
+      <p>Most simulation output is columns of numbers in a text file. numpy reads and writes these directly:</p>
+      <pre># a file energy.dat with two columns: time  energy
+data = np.loadtxt("energy.dat")      # → 2-D array, one row per line
+time   = data[:, 0]                   # first column
+energy = data[:, 1]                   # second column
+
+np.savetxt("summary.dat", np.column_stack([time, energy]),
+           header="time energy")      # write columns back out</pre>
+      <p>For messier or labelled tables (mixed types, headers, missing values), <strong>pandas</strong> (<code>pd.read_csv</code>) is worth learning next — but for clean numeric columns, <code>np.loadtxt</code> is all you need.</p>
+    </section>
+
+    <section class="section">
+      <h2>4 · Plotting with matplotlib</h2>
+      <p>A figure is how you actually <em>see</em> whether a simulation equilibrated or a fit is sensible. The everyday pattern: create axes, plot, label, save.</p>
+
+      <figure>
+        <svg viewBox="0 0 580 150" role="img" aria-labelledby="pyttl pydesc" xmlns="http://www.w3.org/2000/svg" style="max-width:580px">
+          <title id="pyttl">The read, compute, plot pipeline</title>
+          <desc id="pydesc">A data file is read into a numpy array, the array is reduced or fitted to numbers, and matplotlib turns the result into a saved figure.</desc>
+          <defs>
+            <marker id="py" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#10685a"/></marker>
+          </defs>
+          <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">
+            <rect x="8"   y="52" width="120" height="46" rx="8" fill="#f0e9db" stroke="#c3b9a3"/><text x="68"  y="72" text-anchor="middle" fill="#4a534f">data file</text><text x="68"  y="88" text-anchor="middle" fill="#7c847f" font-size="10">energy.dat</text>
+            <rect x="172" y="52" width="120" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="232" y="72" text-anchor="middle" fill="#0a463c">numpy array</text><text x="232" y="88" text-anchor="middle" fill="#4a534f" font-size="10">np.loadtxt</text>
+            <rect x="336" y="52" width="120" height="46" rx="8" fill="#e2ebe6" stroke="#10685a"/><text x="396" y="72" text-anchor="middle" fill="#0a463c">compute</text><text x="396" y="88" text-anchor="middle" fill="#4a534f" font-size="10">mean · fit · slice</text>
+            <rect x="500" y="52" width="72" height="46" rx="8" fill="#dff0e6" stroke="#146c3d"/><text x="536" y="72" text-anchor="middle" fill="#146c3d">figure</text><text x="536" y="88" text-anchor="middle" fill="#4a534f" font-size="10">.svg</text>
+            <line x1="128" y1="75" x2="170" y2="75" stroke="#10685a" stroke-width="2" marker-end="url(#py)"/>
+            <line x1="292" y1="75" x2="334" y2="75" stroke="#10685a" stroke-width="2" marker-end="url(#py)"/>
+            <line x1="456" y1="75" x2="498" y2="75" stroke="#10685a" stroke-width="2" marker-end="url(#py)"/>
+          </g>
+        </svg>
+        <figcaption>Figure 1. Every analysis exercise in the later modules is this pipeline: read a file into numpy, compute a number, and plot it with matplotlib.</figcaption>
+      </figure>
+
+      <pre>import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+ax.plot(time, energy, label="potential energy")
+ax.set_xlabel("time / ps")            # ALWAYS label axes, with units
+ax.set_ylabel("energy / kJ mol$^{-1}$")
+ax.legend()
+fig.savefig("energy.svg", bbox_inches="tight")   # save, don't just show()</pre>
+      <div class="callout">
+        <p class="callout-title">A figure without axis labels is not a result</p>
+        <p>Label both axes with quantities <em>and</em> units, add a legend when there's more than one series, and <strong>save</strong> the figure to a file (SVG or PNG) so it can be committed and reused — don't rely on an interactive window. These same plots are the deliverables in the scientific modules.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5 · Analysis you can trust</h2>
+      <p>The habits that keep computational results honest are small:</p>
+      <ul>
+        <li><strong>Put reusable work in functions</strong> with clear names and a one-line docstring.</li>
+        <li><strong>Sanity-check on a tiny input</strong> whose answer you can work out by hand — the same discipline <a href="ai-coding-agents.html">Module 07 — Working with AI Coding Agents</a> applies to generated code.</li>
+        <li><strong>Keep scripts under version control</strong> (<a href="git-version-control.html">Module 03</a>) so the exact code behind a figure is recoverable.</li>
+        <li><strong>Watch your units and array shapes</strong> — most scientific-Python bugs are a wrong axis, a mismatched length, or a factor you forgot.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Resources</h2>
+      <ul class="resource-list">
+        <li><strong>The Python Tutorial</strong> — the official language introduction. <a href="https://docs.python.org/3/tutorial/">docs.python.org/3/tutorial</a></li>
+        <li><strong>NumPy — the absolute basics for beginners</strong> — arrays, indexing, operations. <a href="https://numpy.org/doc/stable/user/absolute_beginners.html">numpy.org/doc · absolute beginners</a></li>
+        <li><strong>Matplotlib — Pyplot tutorial &amp; Quick start</strong> — figures, axes, labels, saving. <a href="https://matplotlib.org/stable/tutorials/pyplot.html">matplotlib.org · pyplot</a></li>
+        <li><strong>Scientific Python Lectures</strong> — a thorough, free course on numpy/scipy/matplotlib for science. <a href="https://lectures.scientific-python.org/">lectures.scientific-python.org</a></li>
+        <li><strong>Software Carpentry — Programming with Python</strong> — a gentle, hands-on lesson for researchers. <a href="https://swcarpentry.github.io/python-novice-inflammation/">swcarpentry.github.io/python-novice-inflammation</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Exercise / Deliverable</h2>
+      <ol>
+        <li>Write a Python script that reads a two-column data file (e.g. <code>time</code> and <code>energy</code> — reuse simulation output, or generate a noisy sine with numpy).</li>
+        <li>Compute a summary with numpy: the mean and standard deviation of one column, and the slope of a straight-line fit (<code>np.polyfit</code>).</li>
+        <li>Put the summary in a <strong>function</strong> and check it on a tiny hand-computable input.</li>
+        <li>Produce a matplotlib figure with both axes labelled (with units) and a legend, and save it to a file.</li>
+      </ol>
+      <p><strong>Deliverable:</strong> the script, the saved figure, and one sentence stating the value you checked by hand and that the function reproduced it.</p>
+    </section>
+
+    <nav class="pager">
+      <a href="git-version-control.html"><span class="dir">← Previous</span><br><span class="t">Version Control with Git</span></a>
+      <a class="next" href="scientific-software-environments.html"><span class="dir">Next →</span><br><span class="t">Scientific Software &amp; Environments</span></a>
+    </nav>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <p>Wu Research Group · XJTLU · Module 04 of 13</p>
+      <p><a href="../index.html">All modules</a></p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
